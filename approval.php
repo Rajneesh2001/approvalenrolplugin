@@ -1,0 +1,22 @@
+<?php
+require_once("../../config.php");
+require_once("$CFG->dirroot/enrol/approvalenrol/locallib.php");
+
+defined('MOODLE_INTERNAL') || die();
+require_login();
+$url = new moodle_url('/enrol/approvalenrol/approval.php');
+$context = context_system::instance();
+$courseid = required_param('courseid',PARAM_INT);
+$titleheading = get_string('nodename', 'enrol_approvalenrol');
+$PAGE->set_url($url);
+$PAGE->set_context($context);
+$PAGE->set_pagelayout('standard');
+$PAGE->set_title($titleheading);
+$PAGE->set_heading($titleheading);
+echo $OUTPUT->header();
+// echo $OUTPUT->render_from_template("enrol_approvalenrol/approvalrequests",null);
+$data = get_approval_user_requests();
+$table = new html_table();
+$table->head = ['Name','Email','Actions'];
+$table->data = $data;
+echo html_writer::table($table);

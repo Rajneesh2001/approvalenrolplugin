@@ -13,10 +13,12 @@ $PAGE->set_context($context);
 $PAGE->set_pagelayout('standard');
 $PAGE->set_title($titleheading);
 $PAGE->set_heading($titleheading);
+$PAGE->requires->css(new moodle_url('/enrol/approvalenrol/styles.css'));
+$PAGE->requires->js_call_amd('enrol_approvalenrol/approvalrequests', 'init');
 echo $OUTPUT->header();
-// echo $OUTPUT->render_from_template("enrol_approvalenrol/approvalrequests",null);
 $data = get_approval_user_requests();
 $table = new html_table();
 $table->head = ['Name','Email','Actions'];
-$table->data = $data;
+$table->data = $data;// Debugging
 echo html_writer::table($table);
+echo $OUTPUT->footer();

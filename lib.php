@@ -52,8 +52,6 @@ class enrol_approvalenrol_plugin extends enrol_plugin{
         return $OUTPUT->box($output);
 
     }
-
-
     public function allow_manage($instance){
         return true;
     }

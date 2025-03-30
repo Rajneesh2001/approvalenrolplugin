@@ -46,7 +46,10 @@ class approval_enrol {
         $touser = \core_user::get_noreply_user();
         $fromuser = \core_user::get_user($USER->id);
         $subject = 'Course Enrolment Approval Request';
+
+        //dummy text
         $text = "Hi this is the approval request from the email $fromuser->email";
+        
         if(!email_to_user($touser,$fromuser,$subject,$messagetext)){
             throw new Exception('Email could not be sent kindly check');
         }
@@ -61,7 +64,7 @@ function get_approval_user_requests(){
         $tableobject = new stdClass();
         $tableobject->name = $request->firstname." ".$request->lastname;
         $tableobject->email = $request->email;
-        $tableobject->actions = $OUTPUT->pix_icon('check-solid','no-image','enrol_approvalenrol',['class'=>'approve'])." ".$OUTPUT->pix_icon('xmark-solid','no-image','enrol_approvalenrol',['class'=>'reject']);
+        $tableobject->actions = $OUTPUT->pix_icon('check-solid','Approve Request','enrol_approvalenrol',['class'=>'approve'])." ".$OUTPUT->pix_icon('xmark-solid','Reject Request','enrol_approvalenrol',['class'=>'reject']);
         $requestarray[] = $tableobject;
     }
     return $requestarray;

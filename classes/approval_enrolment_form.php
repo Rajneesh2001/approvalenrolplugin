@@ -3,7 +3,7 @@
 
 require_once("../config.php");
 require_once("$CFG->libdir/formslib.php");
-
+defined('MOODLE_INTERNAL') || die;
 class approval_enrolment_form extends moodleform
 {
     protected $instance;
@@ -39,7 +39,6 @@ class approval_enrolment_form extends moodleform
         $firstname = $data['firstname'];
         $lastname = $data['lastname'];
         $email = $data['email'];
-//        $errors['email'] = 'This is an error';
         return $errors;
     }
 }

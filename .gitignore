@@ -1,0 +1,6 @@
+#ignore ide configuration files
+.idea/
+
+#Ignore specific plugin development files
+db/upgrade.php
+version.php

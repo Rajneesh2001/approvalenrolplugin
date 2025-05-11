@@ -1,5 +1,4 @@
 <?php
-
 function enrol_approvalenrol_extend_navigation_course($parentnode,$course,$context){
     $parentnode->add(
          get_string('nodename','enrol_approvalenrol'),
@@ -33,18 +32,25 @@ class enrol_approvalenrol_plugin extends enrol_plugin{
         require_once($CFG->dirroot. '/enrol/approvalenrol/locallib.php');
 
         $form = new approval_enrolment_form(null, ['instance' => $instance]);
-        $requestdata = $form->get_data();
+        $approvalenrol = new approval_enrol((int)$instance->courseid, $USER->email,$USER->firstname,$USER->lastname);
+        
+        if($form->is_submitted()){
+            $approvalenrol->create_request($requestdata);
+        }
 
-        $approvalenrol = new approval_enrol((int)$instance->courseid, $USER->email,$requestdata);
         $request_status = $approvalenrol->has_made_enrolment_request();
-
-        if($request_status == PENDING_REQUEST){
-            return $OUTPUT->box(get_string('msg', 'enrol_approvalenrol'));
+        switch($request_status){
+            case PENDING_REQUEST:
+                return $OUTPUT->box(get_string('msg', 'enrol_approvalenrol'));
+            case REQUEST_REJECTED:
+                return $OUTPUT->box(get_string('rejectmsg', 'enrol_approvalenrol'));
+            case REQUEST_ACCEPTED:
+                $this->enrol_user($instance, $USER->id);
         }
 
-        if($form->is_submitted() && $requestdata){
-            $requestid= $approvalenrol->create_request($requestdata);
-        }
+        // if($request_status == PENDING_REQUEST){
+        //     return $OUTPUT->box(get_string('msg', 'enrol_approvalenrol'));
+        // }
 
         ob_start();
         $form->display();

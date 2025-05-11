@@ -1,5 +1,5 @@
 <?php
 
-$plugin->version = 2024042201.28;
+$plugin->version = 2024042201.34;
 $plugin->requires = 2024042201.08;
 $plugin->component = 'enrol_approvalenrol';

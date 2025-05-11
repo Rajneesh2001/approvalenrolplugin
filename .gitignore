@@ -4,3 +4,5 @@
 #Ignore specific plugin development files
 db/upgrade.php
 version.php
+.env
+test/*

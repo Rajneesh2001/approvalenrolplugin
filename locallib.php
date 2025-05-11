@@ -1,12 +1,12 @@
 <?php
-
+defined('MOODLE_INTERNAL') || die();
 define('NO_APPROVAL_REQUEST', 0);
 define('REQUEST_ACCEPTED',1);
 define('PENDING_REQUEST', 2);
-define('REQUEST_FAILED',3);
+define('REQUEST_REJECTED',3);
 
 class approval_enrol {
-    public function __construct(private int $courseid, private string $email, private ?\stdClass $data = null){}
+    public function __construct(private int $courseid, private string $email, private string $firstname, private string $lastname){}
    
     public function has_made_enrolment_request(){
         global $DB;
@@ -27,8 +27,8 @@ class approval_enrol {
              $id = $DB->insert_record('user_enrol_approval_requests', [
                  'email' => $this->email,
                  'courseid' => $this->courseid,
-                 'firstname' => $this->data->firstname,
-                 'lastname' => $this->data->lastname,
+                 'firstname' => $this->firstname,
+                 'lastname' => $this->lastname,
                  'approval_status' => 2
              ]);
              if($id){
@@ -58,14 +58,20 @@ class approval_enrol {
 
 function get_approval_user_requests(){
     global $DB,$OUTPUT;
-    $requests = $DB->get_records('user_enrol_approval_requests');
+    $requests = $DB->get_records('user_enrol_approval_requests',[
+        'approval_status' => PENDING_REQUEST
+    ]);
     $requestarray = [];
+    $sn=1;
     foreach($requests as $request){
-        $tableobject = new stdClass();
-        $tableobject->name = $request->firstname." ".$request->lastname;
-        $tableobject->email = $request->email;
-        $tableobject->actions = $OUTPUT->pix_icon('check-solid','Approve Request','enrol_approvalenrol',['class'=>'approve'])." ".$OUTPUT->pix_icon('xmark-solid','Reject Request','enrol_approvalenrol',['class'=>'reject']);
-        $requestarray[] = $tableobject;
+            $tableobject = new stdClass();
+            $tableobject->index = $sn;
+            $tableobject->name = $request->firstname." ".$request->lastname;
+            $tableobject->email = $request->email;
+            $tableobject->actions = $OUTPUT->pix_icon('check-solid','Approve Request','enrol_approvalenrol',['class'=>'approve','id'=>'approve-id:'. $request->userid,'data-courseid' => $request->courseid, 'data-username' => $tableobject->name])." ".$OUTPUT->pix_icon('xmark-solid','Reject Request','enrol_approvalenrol',['class'=>'reject','id'=>'reject-id:'. $request->userid,'data-courseid' => $request->courseid, 'data-username' => $tableobject->name]);
+            $requestarray[] = $tableobject;
+            $sn++;   
     }
     return $requestarray;
 }
+

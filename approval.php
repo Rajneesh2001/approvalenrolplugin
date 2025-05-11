@@ -1,7 +1,6 @@
 <?php
 require_once("../../config.php");
 require_once("$CFG->dirroot/enrol/approvalenrol/locallib.php");
-
 defined('MOODLE_INTERNAL') || die();
 require_login();
 $url = new moodle_url('/enrol/approvalenrol/approval.php');
@@ -18,7 +17,7 @@ $PAGE->requires->js_call_amd('enrol_approvalenrol/approvalrequests', 'init');
 echo $OUTPUT->header();
 $data = get_approval_user_requests();
 $table = new html_table();
-$table->head = ['Name','Email','Actions'];
-$table->data = $data;// Debugging
+$table->head = ['#','Name','Email','Actions'];
+$table->data = $data;
 echo html_writer::table($table);
 echo $OUTPUT->footer();

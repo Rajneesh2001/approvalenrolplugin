@@ -12,6 +12,8 @@ define(['jquery', 'core/ajax' ,'core/notification'], function($, Ajax, notificat
                     message: `User ${userdisplayname} request has been ${requestStatus == 'approve'?'approved':'rejected'}.`,
                     type: 'info'
                     };
+                $('.table-responsive').addClass('process');
+                $('.loader_container').css('display','block');
                 Ajax.call([
                     {
                         methodname: 'enrol_approvalenrol_updaterequests',
@@ -22,6 +24,8 @@ define(['jquery', 'core/ajax' ,'core/notification'], function($, Ajax, notificat
                             },
                             done: function(response) {
                                 if(response.statuscode == 200){
+                                   $('.table-responsive').removeClass('process');
+                                   $('.loader_container').css('display','none');
                                    notification.addNotification(notificationObject);
                                     let tableBody = '';
                                     let i=1;

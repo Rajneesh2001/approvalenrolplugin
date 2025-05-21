@@ -68,7 +68,16 @@ function get_approval_user_requests(){
             $tableobject->index = $sn;
             $tableobject->name = $request->firstname." ".$request->lastname;
             $tableobject->email = $request->email;
-            $tableobject->actions = $OUTPUT->pix_icon('check-solid','Approve Request','enrol_approvalenrol',['class'=>'approve','id'=>'approve-id:'. $request->userid,'data-courseid' => $request->courseid, 'data-username' => $tableobject->name])." ".$OUTPUT->pix_icon('xmark-solid','Reject Request','enrol_approvalenrol',['class'=>'reject','id'=>'reject-id:'. $request->userid,'data-courseid' => $request->courseid, 'data-username' => $tableobject->name]);
+            $approverequrl = new moodle_url('/enrol/approvalenrol/approverequestprocess.php',[
+                'courseid' => $request->courseid,
+                'userid' => $request->userid,
+                'requeststatus' => REQUEST_ACCEPTED
+            ]);;
+            $approverstatus = $OUTPUT->pix_icon('check-solid','Approve Request','enrol_approvalenrol',['class'=>'approve','id'=>'approve-id:'. $request->userid,'data-courseid' => $request->courseid, 'data-username' => $tableobject->name]);
+            $rejectstatus = $OUTPUT->pix_icon('xmark-solid','Reject Request','enrol_approvalenrol',['class'=>'reject','id'=>'reject-id:'. $request->userid,'data-courseid' => $request->courseid, 'data-username' => $tableobject->name]);
+
+            $tableobject->actions = html_writer::link($approverequrl,$approverstatus)." ".html_writer::link($approverequrl,$rejectstatus);
+            
             $requestarray[] = $tableobject;
             $sn++;   
     }

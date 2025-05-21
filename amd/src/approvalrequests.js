@@ -1,7 +1,8 @@
 define(['jquery', 'core/ajax' ,'core/notification'], function($, Ajax, notification) {
     return {
         init: function() {
-            $(document).on('click','.approve, .reject',function(){
+            $(document).on('click','.approve, .reject',function(e){
+                e.preventDefault();
                 const REQUEST_ACCEPTED = 1;
                 const REQUEST_REJECTED = 3;
                 let userid = $(this).attr('id').split(':')[1];

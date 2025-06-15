@@ -4,7 +4,87 @@
 .icon:hover{
     opacity: 0.3;
 }
+
+.row{
+  display:flex;
+  gap:1rem;
+  padding:15px;
+}
+
+.card_container{
+  flex: 0 0 47%;
+  height:100%;
+  border:1px solid #000;
+  border-radius:10px;
+}
+
+.approval__card{
+    display: flex;
+    height: 100%;
+    justify-content: space-between;
+    padding: 25px 30px;
+    align-items: center;
+    flex-wrap:wrap-reverse;
+}
+
+.approval__figure{
+  display:flex;
+  height:50px;
+  width:50px;
+  border-radius: 50%;
+  justify-content: center;
+  align-items: center;
+}
+
+.approval__card svg{
+  width:20px;
+  margin:0 !important;
+}
+
+.approval__card p{
+  color:grey;
+  text-transform: uppercase;
+}
+
+.approval__card p,.approval__card h2,figure{
+  margin:0 !important;
+}
+
+/* || Media Queries */
+
+@media screen and (max-width:586px){
+   .approval__span{
+    order:2;
+   }
+   .approval__card{
+    flex-direction:column;
+    gap:1rem;
+    padding:27px 15px;
+   }
+   .approval__span{
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+   }
+   .approval__span h2{
+    font-size:23px
+   }
+   .approval__span p{
+    font-size:15px;
+   }
+}
+
+@media screen and (max-width:432px){
+  .approval__card{
+    padding: 10px 0px;
+  }
+  .approval__span p{
+    font-size:12px;
+  }
+}
+
 /* HTML: <div class="loader"></div> */
+/* Loader class */
 .loader {
   width: 15px;
   aspect-ratio: 1;
@@ -49,3 +129,5 @@
 @keyframes l8-2 {
     100%{transform: rotate(-180deg) translateX(25px)}
 }
+
+

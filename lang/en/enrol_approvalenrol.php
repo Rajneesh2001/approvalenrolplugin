@@ -16,3 +16,8 @@ $string['requestdenied'] = 'Request Denied';
 $string['rejectmsg'] = 'Your enrolment request has been rejected by the approver.
 Please contact the approver for further clarification or to resolve the issue.
 ';
+$string['approve_req_dashboard'] = 'Approval Dashboard';
+$string['approved_counts'] = 'Requests Approved';
+$string['rejected_counts'] = 'Requests Rejected';
+$string['pending_counts'] = 'Requests Pending';
+$string['total_counts'] = 'Total Requests';

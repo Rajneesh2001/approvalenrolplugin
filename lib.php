@@ -1,5 +1,5 @@
 <?php
-function enrol_approvalenrol_extend_navigation_course($parentnode,$course,$context){
+function enrol_approvalenrol_extend_navigation_course($parentnode,$course){
     $parentnode->add(
          get_string('nodename','enrol_approvalenrol'),
          new moodle_url('/enrol/approvalenrol/approval.php',['courseid' => $course->id]),
@@ -7,6 +7,14 @@ function enrol_approvalenrol_extend_navigation_course($parentnode,$course,$conte
          NULL,
          'approvalenrol',
          NULL
+    );
+    $parentnode->add(
+        get_string('approve_req_dashboard', 'enrol_approvalenrol'),
+        new moodle_url('/enrol/approvalenrol/approval_dashboard.php',['courseid' => $course->id]),
+        navigation_node::TYPE_CUSTOM,
+        NULL,
+        'approvalenrol__dashboard',
+        NULL
     );
 }
 class enrol_approvalenrol_plugin extends enrol_plugin{

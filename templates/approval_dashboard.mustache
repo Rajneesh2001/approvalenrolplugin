@@ -1,0 +1,47 @@
+<div id="container" style="width:100%;height:400px"></div>
+<div class="row mt-5">
+      <div class="card_container">
+        <div class="approval__card">
+          <span class="approval__span">
+          <p>{{#str}} total_counts,enrol_approvalenrol {{/str}}</p>
+          <h2>{{total_counts}}</h2>
+          </span>
+          <figure class="approval__figure"   style="background-color:red;">
+           <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M8.5 17.5L5.5 20V15.5H2.46154C2.07391 15.5 1.70217 15.346 1.42807 15.0719C1.15398 14.7978 1 14.4261 1 14.0385V2.46154C1 2.07391 1.15398 1.70217 1.42807 1.42807C1.70217 1.15398 2.07391 1 2.46154 1H18.5385C18.9261 1 19.2978 1.15398 19.5719 1.42807C19.846 1.70217 20 2.07391 20 2.46154V6.8119" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M5 5H16" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M5 9H10" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M17 19C19.2091 19 21 17.2091 21 15C21 12.7909 19.2091 11 17 11C14.7909 11 13 12.7909 13 15C13 17.2091 14.7909 19 17 19Z" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M22 22C21.5167 21.3959 20.7962 20.8906 19.9155 20.5384C19.0348 20.1861 18.027 20 17 20C15.973 20 14.9652 20.1861 14.0845 20.5384C13.2038 20.8906 12.4833 21.3959 12 22" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+         </figure>
+        </div>
+      </div>
+      <div class="card_container">
+        <div class="approval__card">
+          <span class="approval__span">
+          <p>{{#str}} pending_counts,enrol_approvalenrol {{/str}}</p>
+          <h2>{{pending_counts}}</h2>
+          </span>
+          <figure class="approval__figure"  style="background-color:orange;">
+           <svg viewBox="0 0 1024 1024" class="icon" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="#FFFFFF" stroke="#FFFFFF"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M182.99 146.2h585.14v402.29h73.14V73.06H109.84v877.71H512v-73.14H182.99z" fill="#FFFFFF"></path><path d="M256.13 219.34h438.86v73.14H256.13zM256.13 365.63h365.71v73.14H256.13zM256.13 511.91h219.43v73.14H256.13zM731.55 585.06c-100.99 0-182.86 81.87-182.86 182.86s81.87 182.86 182.86 182.86c100.99 0 182.86-81.87 182.86-182.86s-81.86-182.86-182.86-182.86z m0 292.57c-60.5 0-109.71-49.22-109.71-109.71 0-60.5 49.22-109.71 109.71-109.71 60.5 0 109.71 49.22 109.71 109.71 0.01 60.49-49.21 109.71-109.71 109.71z" fill="#FFFFFF"></path><path d="M758.99 692.08h-54.86v87.27l69.39 68.76 38.61-38.96-53.14-52.66z" fill="#FFFFFF"></path></g></svg>
+         </figure>
+        </div>
+      </div>
+      <div class="card_container">
+        <div class="approval__card">
+          <span class="approval__span">
+          <p>{{#str}} rejected_counts,enrol_approvalenrol {{/str}}</p>
+          <h2>{{rejected_counts}}</h2>
+          </span>
+          <figure class="approval__figure" style="background-color:#efd411;">
+           <svg fill="#FFFFFF" height="200px" width="200px" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 329.328 329.328" xml:space="preserve" stroke="#FFFFFF"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M164.666,0C73.871,0,0.004,73.871,0.004,164.672c0.009,90.792,73.876,164.656,164.662,164.656 c90.793,0,164.658-73.865,164.658-164.658C329.324,73.871,255.459,0,164.666,0z M164.666,30c31.734,0,60.933,11.042,83.975,29.477 L59.478,248.638c-18.431-23.04-29.471-52.237-29.474-83.967C30.004,90.413,90.413,30,164.666,30z M164.666,299.328 c-31.733,0-60.934-11.042-83.977-29.477L269.854,80.691c18.431,23.043,29.471,52.244,29.471,83.979 C299.324,238.921,238.917,299.328,164.666,299.328z"></path> </g></svg>
+         </figure>
+        </div>
+      </div>
+      <div class="card_container">
+        <div class="approval__card">
+          <span class="approval__span">
+          <p>{{#str}} approved_counts,enrol_approvalenrol {{/str}}</p>
+          <h2>{{approved_counts}}</h2>
+          </span>
+          <figure class="approval__figure" style="background-color:#5e72e4;">
+           <svg fill="#FFFFFF" viewBox="0 0 32 32" enable-background="new 0 0 32 32" version="1.1" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" stroke="#FFFFFF"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g id="Approved"> <g> <path d="M16,1C7.729,1,1,7.729,1,16s6.729,15,15,15s15-6.729,15-15S24.271,1,16,1z M16,29C8.832,29,3,23.168,3,16S8.832,3,16,3 s13,5.832,13,13S23.168,29,16,29z"></path> <path d="M23.317,10.27l-10.004,9.36l-4.629-4.332c-0.403-0.377-1.035-0.356-1.413,0.047c-0.377,0.403-0.356,1.036,0.047,1.413 l5.313,4.971c0.192,0.18,0.438,0.27,0.683,0.27s0.491-0.09,0.683-0.27l10.688-10c0.403-0.377,0.424-1.01,0.047-1.413 C24.353,9.913,23.719,9.892,23.317,10.27z"></path> </g> </g> <g id="Approved_1_"></g> <g id="File_Approve"></g> <g id="Folder_Approved"></g> <g id="Security_Approved"></g> <g id="Certificate_Approved"></g> <g id="User_Approved"></g> <g id="ID_Card_Approved"></g> <g id="Android_Approved"></g> <g id="Privacy_Approved"></g> <g id="Approved_2_"></g> <g id="Message_Approved"></g> <g id="Upload_Approved"></g> <g id="Download_Approved"></g> <g id="Email_Approved"></g> <g id="Data_Approved"></g> </g></svg>
+         </figure>
+        </div>
+      </div>   
+</div>

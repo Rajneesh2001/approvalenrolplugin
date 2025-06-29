@@ -8,6 +8,7 @@ class approval_enrol {
     public const REQUEST_ACCEPTED = 1;
     public const PENDING_REQUEST = 2;
     public const REQUEST_REJECTED = 3;
+    public const REQUEST_ALL = 4;
 
     public function __construct(private int $courseid, private string $email, private string $firstname, private string $lastname){}
    
@@ -61,13 +62,32 @@ class approval_enrol {
         }
     }
 
+    /**
+     * Retrieves user enrolment requests for specific course based on approval requests.
+     * @param int $request status 
+     * @param int $courseid
+     * 
+     * @return array $requests
+     */
+
     public static function get_approval_user_requests($requeststatus, $courseid):array{
-    global $DB;
-    $requests = $DB->get_records('user_enrol_approval_requests',[
-        'approval_status' => $requeststatus,
-        'courseid' => $courseid
-    ]);
-    return $requests;
+        global $DB;
+
+        if($courseid <=0 ){
+            throw new \moodle_exception('Course Id must be positive');
+        }
+
+        $params = ['courseid' => $courseid];
+        if($requeststatus !== self::REQUEST_ALL){
+            $params['approval_status'] = $requeststatus;
+        }
+
+        try{
+            $requests = $DB->get_records('user_enrol_approval_requests', $params);
+            return $requests?:[];
+        }catch(Exception $e) {
+            throw new \moodle_exception('Failed to retrive approval requests: ' . $e->getMessage());
+        }
     }
 
     public static function enrol_approvalenrol_requestcounts($courseid):array{

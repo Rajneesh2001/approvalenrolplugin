@@ -16,6 +16,19 @@
   height:100%;
   border:1px solid #000;
   border-radius:10px;
+  overflow:hidden;
+}
+
+.card_container a{
+  text-decoration: none;
+  color:black;
+}
+
+.card_container:hover{
+  cursor: pointer;
+  background-color:whitesmoke;
+  box-shadow: 0 0 8px #000;
+  transition:all 0.3s ease-in-out;
 }
 
 .approval__card{
@@ -48,6 +61,10 @@
 
 .approval__card p,.approval__card h2,figure{
   margin:0 !important;
+}
+
+.btn__back{
+  margin:15px 0px;
 }
 
 /* || Media Queries */

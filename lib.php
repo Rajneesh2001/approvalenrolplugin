@@ -2,7 +2,7 @@
 function enrol_approvalenrol_extend_navigation_course($parentnode,$course){
     $parentnode->add(
          get_string('nodename','enrol_approvalenrol'),
-         new moodle_url('/enrol/approvalenrol/approval.php',['courseid' => $course->id]),
+         new moodle_url('/enrol/approvalenrol/approval.php',['courseid' => $course->id, 'status' => '2']),
          navigation_node::TYPE_CUSTOM,
          NULL,
          'approvalenrol',

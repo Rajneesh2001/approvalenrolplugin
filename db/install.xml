@@ -4,7 +4,7 @@
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
-    <TABLE NAME="user_enrol_approval_requests" COMMENT="This table contains list of user requested for course enrolment.">
+    <TABLE NAME=\enrol_approvalenrol\approval_enrol::$table COMMENT="This table contains list of user requested for course enrolment.">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="firstname" TYPE="char" LENGTH="50" NOTNULL="true" SEQUENCE="false"/>

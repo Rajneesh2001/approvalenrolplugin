@@ -7,11 +7,16 @@ use \enrol_approvalenrol\output\approval_enrol_renderer;
 
 $url = new moodle_url('/enrol/approvalenrol/approval.php');
 $courseid = required_param('courseid',PARAM_INT);
+$status = required_param('status', PARAM_INT);
 if (!$courseid) {
     throw new moodle_exception('Course Id cannot be 0');
 }
+if(!$status){
+    throw new moodle_exception('Status cannot be empty');
+}
 $course = get_course($courseid);
-$status = optional_param('status', null, PARAM_INT);
+
+
 if($status == approval_enrol::PENDING_REQUEST){
     $pendingrequest = true;
     //Ensure login and permissions
@@ -38,10 +43,7 @@ $PAGE->requires->js_call_amd('enrol_approvalenrol/approvalrequests', 'init');
 $requests = approval_enrol::get_approval_user_requests($status, $courseid);
 $output = html_writer::tag('a', 'Go to Approval Dashboard',['class' => 'btn btn-secondary btn__back','href'=>new moodle_url('/enrol/approvalenrol/approval_dashboard.php',['courseid' => $courseid])]);
 if(empty($requests)){
-  $output .= html_writer::div(
-        'No Records Found',
-        'alert alert-info'
-    );
+  $output .= approval_enrol_renderer::render_notice_message('No requests found');
 }else{
 $data = [];
 $sn=1;
@@ -62,11 +64,13 @@ foreach($requests as $request){
 
 $table = new html_table();
 $table->head = ['#','Name','Email'];
+
 if($status == approval_enrol::PENDING_REQUEST){
    array_push($table->head, 'Actions');
-}else if($allrequest){
+}else if($status == approval_enrol::REQUEST_ALL){
    array_push($table->head, 'Approval Status');
 }
+
 $table->data = $data;
 $loader = '';
 $loader.= html_writer::start_div('loader_container');

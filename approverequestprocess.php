@@ -17,9 +17,9 @@ if($response){
     \core\notification::add("User $userdisplayname request has been $requeststatus",\core\output\notification::NOTIFY_INFO);
 
     redirect(new moodle_url('/enrol/approvalenrol/approval.php',[
-        'courseid' => $courseid
+        'courseid' => $courseid,
+        'status' => '2'
     ]));
 }else{
-    error_log(json_encode($response));
 }
 

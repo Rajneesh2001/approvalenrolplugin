@@ -24,7 +24,7 @@ $PAGE->set_context(context_course::instance($courseid));
 $PAGE->set_title($titleheading);
 $PAGE->set_heading($titleheading);
 $PAGE->requires->css(new moodle_url('/enrol/approvalenrol/styles.css'));
-$data = \enrol_approvalenrol\approval_enrol::enrol_approvalenrol_requestcounts($courseid);
+$data = \enrol_approvalenrol\approval_enrol::get_request_counts($courseid);
 $chartcontext = [
     [
         'name' => get_string('approved_counts', 'enrol_approvalenrol'),

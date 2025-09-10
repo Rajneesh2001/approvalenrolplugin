@@ -9,12 +9,17 @@ class approval_enrol {
     public const PENDING_REQUEST = 2;
     public const REQUEST_REJECTED = 3;
     public const REQUEST_ALL = 4;
+    public static $table = 'user_enrol_approval_requests';
 
-    public function __construct(private int $courseid, private string $email, private string $firstname, private string $lastname){}
+    public function __construct(private int $courseid, private string $email, private string $firstname, private string $lastname, private int $userid){}
    
+    /**
+     * Provide the enrolment status for the loggedin user.
+     * @return int
+     */
     public function has_made_enrolment_request():int{
         global $DB;
-        $status = $DB->get_record('user_enrol_approval_requests', [
+        $status = $DB->get_record(self::$table, [
                 'email' => $this->email,
                 'courseid' => $this->courseid,
             ], 'approval_status');
@@ -22,31 +27,38 @@ class approval_enrol {
         if(!$status){
             return self::NO_APPROVAL_REQUEST;
         }
-        
         return $status->approval_status;
     }
+
+    /**
+     * Create user enrolment record in the Approval Requests table and send the email to notify the Approver
+     * @return int
+     */
     public function create_request():int{
          global $DB;
          if($this->has_made_enrolment_request() !== self::NO_APPROVAL_REQUEST){
-            return 0;
+            throw new \moodle_exception(get_string('requestexists', 'enrol_approvalenrol'));
          }
-         try {
-             $id = $DB->insert_record('user_enrol_approval_requests', [
+         $id = $DB->insert_record(self::$table, [
                  'email' => $this->email,
                  'courseid' => $this->courseid,
                  'firstname' => $this->firstname,
                  'lastname' => $this->lastname,
+                 'userid' => $this->userid,
                  'approval_status' => self::PENDING_REQUEST,
              ]);
              if($id){
-                self::send_email_to_user();
+                $this->send_email_to_user();
              }
-         }catch(Exception $e){
-            throw new \moodle_exception($e->getMessage());
-         }
+         
          return $id;
     }
-    public static function send_email_to_user():void{
+
+    /**
+     * send automated mail to the user
+     * @return void
+     */
+    public function send_email_to_user():void{
         global $CFG,$USER;
         require_once($CFG->libdir . '/moodlelib.php');
 
@@ -57,8 +69,8 @@ class approval_enrol {
         //dummy text
         $text = "Hi this is the approval request from the email {$fromuser->email}";
         
-        if(!email_to_user($touser,$fromuser,$subject,$text)){
-            throw new Exception('Email could not be sent kindly check');
+        if(!\enrol_approvalenrol\local\helper::send_message(\core_user::get_support_user(), $touser, $subject, $text)){
+            throw new \moodle_exception(get_string('emailnotsend','enrol_approvalenrol'));
         }
     }
 
@@ -74,7 +86,7 @@ class approval_enrol {
         global $DB;
 
         if($courseid <=0 ){
-            throw new \moodle_exception('Course Id must be positive');
+            throw new \moodle_exception(get_string('invalid_courseid', 'enrol_approvalenrol'));
         }
 
         $params = ['courseid' => $courseid];
@@ -83,26 +95,37 @@ class approval_enrol {
         }
 
         try{
-            $requests = $DB->get_records('user_enrol_approval_requests', $params);
+            $requests = $DB->get_records(self::$table, $params);
             return $requests?:[];
         }catch(Exception $e) {
-            throw new \moodle_exception('Failed to retrive approval requests: ' . $e->getMessage());
+            throw new \moodle_exception('Failed to retrieve approval requests: ' . $e->getMessage());
         }
     }
 
-    public static function enrol_approvalenrol_requestcounts($courseid):array{
+    /**
+     * Retrieves the following:
+     * approved_counts: the count of users whose enrolment requests were accepted
+     * rejected_counts: the count of users whose enrolment requests were rejected
+     * pending_counts: the counts of users whose enrolment requests are still pending
+     * total_counts: Total Enrolment Requests.
+     * 
+     * @param int $courseid
+     * @return array $requestscountarray
+     */
+    public static function get_request_counts($courseid):array{
         global $DB;
         $requestcounts = ['approved_counts' => 0,'rejected_counts' => 0,'pending_counts' => 0,'total_counts' => 0];
-        $sql = "SELECT case when approval_status = 1 then 'approved_counts'
-                when approval_status = 3 then 'rejected_counts'
+        $sql = "SELECT case when approval_status = " .self::REQUEST_ACCEPTED. " then 'approved_counts'
+                when approval_status = " . self::REQUEST_REJECTED . " then 'rejected_counts'
                 else 'pending_counts' end AS status
-                ,count(approval_status) AS request_counts from {user_enrol_approval_requests} 
+                ,count(approval_status) AS request_counts from {".
+                self::$table ."} 
                 where courseid = :courseid group by approval_status";
 
-        $requestscountarray = $DB->get_records_sql($sql, [
+        $requestsarray = $DB->get_records_sql($sql, [
                                     'courseid' => $courseid,
                                 ]);
-        foreach($requestscountarray as $requests){
+        foreach($requestsarray as $requests){
             $requestcounts[$requests->status] = $requests->request_counts?:0;
             $requestcounts['total_counts'] += $requests->request_counts;
         }

@@ -20,4 +20,11 @@ class approval_enrol_renderer {
         return \html_writer::link($approverequrl,$approverstatus)." ".\html_writer::link($approverequrl,$rejectstatus);
     }
 
+    public static function render_notice_message(string $message):string{
+        return \html_writer::div(
+            $message,
+            'alert alert-info'
+        );
+    }
+
 }

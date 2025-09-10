@@ -27,7 +27,8 @@ class updaterequests extends external_api{
                 'firstname' => new external_value(PARAM_TEXT,'FIRST NAME'),
                 'lastname' => new external_value(PARAM_TEXT,'LAST NAME'),
                 'approval_status' => new external_value(PARAM_TEXT,'REQUEST STATUS'),
-                'courseid' => new external_value(PARAM_INT,'COURSE ID')
+                'courseid' => new external_value(PARAM_INT,'COURSE ID'),
+                'userid' => new external_value(PARAM_INT,'USER ID'),
             ]),),
             'requeststatus' => new external_value(PARAM_TEXT,'REQUESTS',VALUE_OPTIONAL),
             'errormessage' => new external_value(PARAM_TEXT,'ERROR MESSAGE', VALUE_OPTIONAL)
@@ -39,15 +40,15 @@ class updaterequests extends external_api{
         // Start Transaction
 
         $transaction = $DB->start_delegated_transaction();
-
         try{
             $DB->execute(
-                'UPDATE {user_enrol_approval_requests} SET approval_status = :status WHERE userid = :userid',
+                'UPDATE {'. \enrol_approvalenrol\approval_enrol::$table .'} SET approval_status = :status WHERE userid = :userid',
                 ['status' => $requeststatus, 'userid' => $userid]
             );
 
+            
         // Commit Transaction
-            $updatedusersdata = $DB->get_records('user_enrol_approval_requests',[
+            $updatedusersdata = $DB->get_records(\enrol_approvalenrol\approval_enrol::$table,[
                 'approval_status' => '2'
             ],'','*');  
 
@@ -66,9 +67,6 @@ class updaterequests extends external_api{
             $event->trigger();
             return ['statuscode' => 200, 'data' => $updatedusersdata,'successmessage' => get_string('successmsg','enrol_approvalenrol')];
         }catch(\Exception $e){
-            error_log($e->getMessage().'error log');
-        // Rollback on error
-            $transaction->rollback($e);
             return ['statuscode' => 504, 'errormessage' => $e->getMessage()];
         }
     }

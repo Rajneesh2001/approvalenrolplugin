@@ -36,3 +36,6 @@ $string['pendingrequest'] = 'Request was already in Pending state';
 $string['invalid_courseid'] = 'Invalid Course Id';
 $string['approver'] = 'Approvers List';
 $string['approver_desc'] = 'Select The User Email Whome you want to assign Approver role';
+$string['approverrole'] = 'Approver';
+$string['approverrole:desc'] = 'Grants the user permission to review and approve enrollment requests submitted by other users for a specific course.
+';

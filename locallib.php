@@ -9,7 +9,7 @@ class approval_enrol {
     public const PENDING_REQUEST = 2;
     public const REQUEST_REJECTED = 3;
     public const REQUEST_ALL = 4;
-    public static $table = 'user_enrol_approval_requests';
+    public static $table = 'enrol_approvalenrol_requests';
 
     public function __construct(private int $courseid, private string $email, private string $firstname, private string $lastname, private int $userid){}
    

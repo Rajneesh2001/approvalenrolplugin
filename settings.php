@@ -20,7 +20,7 @@ defined('MOODLE_INTERNAL') || die();
          get_string('defaultfromemail', 'enrol_approvalenrol', \core_user::get_noreply_user()),
       ));
 
-      $userarray = array_keys(\enrol_approvalenrol\local\helper::get_filtered_userrequests($DB, [], 'email'));
+      $userarray = array_keys($DB->get_records('user', null, '', 'email'));
       $settings->add(new admin_setting_configselect(
          'enrol_approvalenrol/approvers',
          get_string('approver', 'enrol_approvalenrol'),

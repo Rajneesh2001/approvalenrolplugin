@@ -11,7 +11,7 @@
         <FIELD NAME="approval_status" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="2" COMMENT="Approval Status: 1=approved, 2=pending, 3=rejected"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" />
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" />
-        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" />
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="false" />
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

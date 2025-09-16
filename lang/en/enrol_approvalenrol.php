@@ -39,3 +39,4 @@ $string['approver_desc'] = 'Select The User Email Whome you want to assign Appro
 $string['approverrole'] = 'Approver';
 $string['approverrole:desc'] = 'Grants the user permission to review and approve enrollment requests submitted by other users for a specific course.
 ';
+$string['eventrequestcreated'] = 'Request Created';

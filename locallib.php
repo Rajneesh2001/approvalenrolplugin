@@ -18,12 +18,8 @@ class approval_enrol {
      * @return int
      */
     public function has_made_enrolment_request():int{
-        global $DB;
-        $status = $DB->get_record(self::$table, [
-                'email' => $this->email,
-                'courseid' => $this->courseid,
-            ], 'approval_status');
-        
+        $status = \enrol_approvalenrol\local\approvalenrolrequests::get_requests_data('approval_status', $this->courseid, true);
+
         if(!$status){
             return self::NO_APPROVAL_REQUEST;
         }
@@ -34,38 +30,39 @@ class approval_enrol {
      * Create user enrolment record in the Approval Requests table and send the email to notify the Approver
      * @return int
      */
-    public function create_request():int{
+    public function create_enrolment_request():int{
          global $DB;
          if($this->has_made_enrolment_request() !== self::NO_APPROVAL_REQUEST){
             throw new \moodle_exception(get_string('requestexists', 'enrol_approvalenrol'));
          }
-         $id = $DB->insert_record(self::$table, [
-                 'email' => $this->email,
-                 'courseid' => $this->courseid,
-                 'firstname' => $this->firstname,
-                 'lastname' => $this->lastname,
-                 'userid' => $this->userid,
-                 'approval_status' => self::PENDING_REQUEST,
-             ]);
-             if($id){
-                $this->send_email_to_user();
-             }
          
+         $id = \enrol_approvalenrol\local\approvalenrolrequests::create_enrol_approval_requests($this->courseid, self::PENDING_REQUEST, $this->userid);
+         
+         if($id){
+            $this->send_email_to_approver();
+         }
          return $id;
     }
 
     /**
-     * send automated mail to the user
+     * send automated mail to the approver
      * @return void
      */
-    public function send_email_to_user():void{
+    public function send_email_to_approver():void{
         global $CFG,$USER;
+
+        if(!$this->userid){
+            $this->userid = $USER->id;
+        }
+
         require_once($CFG->libdir . '/moodlelib.php');
 
         $touser = \core_user::get_noreply_user();
-        $fromuser = \core_user::get_user($USER->id);
+        $fromuser = \core_user::get_user($this->userid);
         $subject = 'Course Enrolment Approval Request';
 
+        // var_dump($fromuser);
+        var_dump($touser);die;
         //dummy text
         $text = "Hi this is the approval request from the email {$fromuser->email}";
         

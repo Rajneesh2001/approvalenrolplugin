@@ -45,7 +45,7 @@ class enrol_approvalenrol_plugin extends enrol_plugin{
         $approvalenrol = new approval_enrol((int)$instance->courseid, $USER->email,$USER->firstname,$USER->lastname, $USER->id);
         
         if($form->is_submitted()){
-            $approvalenrol->create_request($requestdata);
+            $approvalenrol->create_enrolment_request($requestdata);
         }
 
         $request_status = $approvalenrol->has_made_enrolment_request();

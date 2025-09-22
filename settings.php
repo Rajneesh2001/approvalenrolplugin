@@ -21,7 +21,7 @@ defined('MOODLE_INTERNAL') || die();
       ));
 
       $userarray = array_keys($DB->get_records('user', null, '', 'email'));
-      $settings->add(new admin_setting_configselect(
+      $settings->add(new admin_setting_configselect_autocomplete(
          'enrol_approvalenrol/approvers',
          get_string('approver', 'enrol_approvalenrol'),
          get_string('approver_desc', 'enrol_approvalenrol'),

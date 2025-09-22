@@ -51,6 +51,12 @@ class approval_enrol {
                 $this->send_email_to_user();
              }
          
+         die('First configure the approver first');
+         $id = \enrol_approvalenrol\local\approvalenrolrequests::create_enrol_approval_requests($this->courseid, self::PENDING_REQUEST, $this->userid);
+         
+         if($id){
+            $this->send_email_to_approver();
+         }
          return $id;
     }
 
@@ -69,7 +75,7 @@ class approval_enrol {
         //dummy text
         $text = "Hi this is the approval request from the email {$fromuser->email}";
         
-        if(!\enrol_approvalenrol\local\helper::send_message(\core_user::get_support_user(), $touser, $subject, $text)){
+        if(!\enrol_approvalenrol\local\helper::send_message($fromuser, $touser, $subject, $text)){
             throw new \moodle_exception(get_string('emailnotsend','enrol_approvalenrol'));
         }
     }

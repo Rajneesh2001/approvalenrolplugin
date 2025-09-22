@@ -31,7 +31,7 @@ $string['fromemail_desc'] = 'This Email will appear in the sender section of the
 $string['defaultfromemail'] = '{$a->email}';
 $string['successmessagebody'] = 'Approve Message Body';
 $string['successmessagebody_desc'] = 'This content will be used as the main body of the email sent upon approval.';
-$string['emailnotsend'] = 'Email not send';
+$string['emailnotsend'] = 'Email not send, contact site administrator';
 $string['pendingrequest'] = 'Request was already in Pending state';
 $string['invalid_courseid'] = 'Invalid Course Id';
 $string['approver'] = 'Approvers List';
@@ -40,3 +40,7 @@ $string['approverrole'] = 'Approver';
 $string['approverrole:desc'] = 'Grants the user permission to review and approve enrollment requests submitted by other users for a specific course.
 ';
 $string['eventrequestcreated'] = 'Request Created';
+$string['select_approver'] = 'Select Approver';
+$string['invalidcourse'] = 'Course Id is not Valid';
+$string['submit'] = 'Submit';
+$string['select_user'] = 'Select User';

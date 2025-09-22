@@ -18,6 +18,14 @@ function enrol_approvalenrol_extend_navigation_course($parentnode,$course){
         'approvalenrol__dashboard',
         NULL
     );
+    $parentnode->add(
+        get_string('select_approver', 'enrol_approvalenrol'),
+        new moodle_url('/enrol/approvalenrol/select_approver.php', ['courseid' => $course->id]),
+        navigation_node::NODETYPE_LEAF,
+        NULL,
+        'approvalenrol__approverselect',
+        NULL
+    );
 }
 class enrol_approvalenrol_plugin extends enrol_plugin{
     public function use_standard_editing_ui(){

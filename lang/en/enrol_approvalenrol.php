@@ -51,3 +51,5 @@ $string['approvercreated'] = 'Approver Created';
 $string['approvercreated:desc'] = 'User {$a->userid} was successfully designated as an approver in Course {$a->courseid}.';
 $string['approverupdated'] = 'Approver Updated';
 $string['approverupdated:desc'] = 'The approver of Course {$a->courseid} has been successfully updated to User {$a->userid}';
+$string['not_empty_userid'] = 'Userid is required';
+$string['same_approver_error'] = 'Same Approver';

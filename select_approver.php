@@ -6,6 +6,8 @@ defined('MOODLE_INTERNAL') || die;
 
 $courseid = required_param('courseid', PARAM_INT);
 
+$course = get_course($courseid);
+
 require_login($courseid);
 
 if(empty($courseid)) {
@@ -15,12 +17,16 @@ if(empty($courseid)) {
 $url = new moodle_url('/enrol/approvalenrol/select_approver.php');
 
 $PAGE->set_url($url);
-$PAGE->set_heading(get_string('select_approver', 'enrol_approvalenrol'));
-$PAGE->set_title(get_string('select_approver', 'enrol_approvalenrol'));
+$PAGE->set_heading($course->fullname);
+$PAGE->set_title($course->fullname);
 $PAGE->set_pagelayout('standard');
 $PAGE->set_context(context_course::instance($courseid));
 
-$form = new enrol_approvalenrol\approver_select_form();
+$form = new enrol_approvalenrol\approver_select_form($courseid);
+
+if ($form->get_data()) {
+    \enrol_approvalenrol\local\approvalenrolrequests::upsert_course_approver($form->get_data());
+}
 
 echo $OUTPUT->header();
 

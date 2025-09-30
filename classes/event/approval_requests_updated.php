@@ -16,7 +16,8 @@ class approval_requests_updated extends base{
     }
 
     public function init(){
-        $this->data['objecttable'] = \enrol_approvalenrol\approval_enrol::$table;
+        // $this->data['objecttable'] = 'enrol_approvalenrol_requests';
+        $this->data['objecttable'] = 'enrol_approvalenrol_requests';
         $this->data['crud'] = 'u';
         $this->data['edulevel'] = self::USER_OTHER;
     }

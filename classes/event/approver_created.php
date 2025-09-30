@@ -49,7 +49,7 @@ class approver_created extends base
      */
     public function get_url()
     {
-        return new \moodle_url('/enrol/approvalenrol/select_approver.php', ['courseid' => $this->context->instanceid]);
+        return new \moodle_url('/enrol/approvalenrol/select_approver.php', ['courseid' => $this->courseid]);
     }
 
     /**

@@ -53,3 +53,5 @@ $string['approverupdated'] = 'Approver Updated';
 $string['approverupdated:desc'] = 'The approver of Course {$a->courseid} has been successfully updated to User {$a->userid}';
 $string['not_empty_userid'] = 'Userid is required';
 $string['same_approver_error'] = 'Same Approver';
+$string['noapproverrole'] = 'Unable to retrieve the Approver Role. Please contact your site administrator';
+$string['approvalenrol:manage'] = 'View Approval Dashboard,Manage Approval Requests';

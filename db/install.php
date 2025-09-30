@@ -13,6 +13,8 @@ function xmldb_enrol_approvalenrol_install()
             (\context_course::instance())->id,
             true
         );
+        }else{
+            throw new \moodle_exception('noapproverrole', 'enrol_approvalenrol');
         }
     }
 }

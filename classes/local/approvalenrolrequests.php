@@ -155,6 +155,7 @@ class approvalenrolrequests{
 
      public static function upsert_course_approver(\stdClass $formdata)
     {
+        global $DB;
         if (isset($formdata) && is_numeric($formdata->userid) && !empty($formdata->userid)) {
 
             $approverrecordid = \enrol_approvalenrol\local\approvalenrolrequests::get_course_approver_field($formdata->courseid, 'id');
@@ -174,6 +175,13 @@ class approvalenrolrequests{
 
                 \core\notification::success("Approver Added");
             }
+            try{
+            $approverroleid = $DB->get_field('role', 'id', ['shortname' => 'approver']);
+            role_assign($approverroleid, $formdata->userid, \context_course::instance($formdata->courseid), 'enrol_approvalenrol');
+            } catch (\Exception $e) {
+                throw new \moodle_exception('noapproverrole', 'enrol_approvalenrol');
+            }
+
         }
     }
 

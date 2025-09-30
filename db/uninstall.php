@@ -7,12 +7,19 @@ function xmldb_enrol_approvalenrol_uninstall(){
     global $DB;
 
     try {
+        // Get database manager instance
         $dbman = $DB->get_manager();
 
-        $table = new xmldb_table('enrol_approval_requests');
+        $table1 = new xmldb_table('enrol_approvalenrol_requests');
+        $table2 = new xmldb_table('enrol_approvalenrol_approvers');
 
-        if($dbman->table_exists($table)){
-            $dbman->drop_table($table);
+        // Drop tables if they exist.
+        if ($dbman->table_exists($table1)){
+            $dbman->drop_table($table1);
+        }
+
+        if ($dbman->table_exists($table2)) {
+            $dbman->drop_table($table2);
         }
 
         //Remove all config variables for enrol_approvalenrol plugin

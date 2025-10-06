@@ -29,5 +29,12 @@ defined('MOODLE_INTERNAL') || die();
          $userarray
       ));
 
+      $settings->add(new admin_setting_configcheckbox(
+         'enrol_approvalenrol/enableapproverreporting',
+         get_string('enableapproverreporting', 'enrol_approvalenrol'),
+         get_string('enableapproverreporting:desc', 'enrol_approvalenrol'),
+         false
+      ));
+
       $ADMIN->add('enrolments', $settings);
    }

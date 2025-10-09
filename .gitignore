@@ -5,4 +5,4 @@
 db/upgrade.php
 version.php
 .env
-test/*
+tests/*

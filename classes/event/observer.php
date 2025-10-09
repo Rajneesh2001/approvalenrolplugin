@@ -2,6 +2,7 @@
 
 namespace enrol_approvalenrol\event;
 use enrol_approvalenrol\event\approval_requests_updated;
+use \core\event\config_log_created;
 
 
 class observer {
@@ -37,5 +38,43 @@ class observer {
       }
       }
             \enrol_approvalenrol\local\helper::send_message($sender, $receiver, $subject, $message);
+     }
+
+     /**
+      * Reacts to email approval verify plugin config changes
+      *
+      * @param \core\event\config_log_created $event
+      * @return void
+      */
+     public static function save_config_data(config_log_created $event):void {
+         global $DB;
+         $eventdata = $event->get_data();
+         $config = $eventdata['other'];
+         $contextsystem = \context_system::instance();
+
+         if ($config['plugin'] !== 'enrol_approvalenrol') {
+            return;
+         }
+
+         if (!$approverroleid = $DB->get_field('role', 'id', ['shortname' => 'approver'])) {
+               debugging(get_string('noapproverrole', 'enrol_approvalenrol'), DEBUG_DEVELOPER);
+               return;
+         }
+
+         if ($config['name'] !== 'enableapproverreporting') {
+            return;
+         }
+
+         if ( (int)$config['value'] !== (int)$config['oldvalue'] ) {
+            $permission = (int)$config['value'] === 1 ? CAP_ALLOW : CAP_PROHIBIT;
+            try {
+            assign_capability('enrol/approvalenrol:manage', $permission, $approverroleid, $contextsystem->id, true);
+            accesslib_clear_all_caches(true);
+            } catch (\Exception $e) {
+               debugging('Failed to assign approver capability '. $e->getMessage(), DEBUG_DEVELOPER);
+               return;
+            }
+         }
+
      }
 }

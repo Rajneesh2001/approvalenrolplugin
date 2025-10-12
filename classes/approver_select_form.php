@@ -16,11 +16,10 @@ class approver_select_form extends \moodleform
     {
 
         $mform = $this->_form;
-
-        $candidates = (\enrol_approvalenrol\local\approvalenrolrequests::fetch_approvers_candidates());
+        $paritcipants = get_enrolled_users(\context_course::instance($this->courseid));
         $options[0] = '';
-        foreach ($candidates as $candidate) {
-            $options[$candidate->id] = $candidate->name . " " . $candidate->email;
+        foreach ($paritcipants as $paritcipant) {
+            $options[$paritcipant->id] = $paritcipant->name . " " . $paritcipant->email;
         }
         $mform->addElement(
             'autocomplete',

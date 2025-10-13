@@ -51,7 +51,6 @@ class observer {
          $eventdata = $event->get_data();
          $config = $eventdata['other'];
          $contextsystem = \context_system::instance();
-
          if ($config['plugin'] !== 'enrol_approvalenrol') {
             return;
          }
@@ -61,11 +60,12 @@ class observer {
                return;
          }
 
-         if ($config['name'] !== 'enableapproverreporting') {
-            return;
+         // When 'approvers' is changed, $config->value contains the user ID for role assignment. 
+         if ($config['name'] === 'approvers') {
+            role_assign($approverroleid, $config['value'], $contextsystem->id, 'enrol_approvalenrol');
          }
-
-         if ( (int)$config['value'] !== (int)$config['oldvalue'] ) {
+         // For 'enableapproverreporting', $config->value is a boolean: 1 = enabled, 0 = disabled.
+         if ($config['name'] === 'enableapproverreporting' && (int)$config['value'] !== (int)$config['oldvalue'] ) {
             $permission = (int)$config['value'] === 1 ? CAP_ALLOW : CAP_PROHIBIT;
             try {
             assign_capability('enrol/approvalenrol:manage', $permission, $approverroleid, $contextsystem->id, true);
@@ -75,6 +75,5 @@ class observer {
                return;
             }
          }
-
      }
 }

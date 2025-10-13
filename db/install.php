@@ -9,5 +9,7 @@ function xmldb_enrol_approvalenrol_install()
         if(!$roleid) {
             throw new \moodle_exception('noapproverrole', 'enrol_approvalenrol');
         }
+
+        assign_capability('moodle/course:view', CAP_ALLOW, $roleid, context_system::instance());
     }
 }

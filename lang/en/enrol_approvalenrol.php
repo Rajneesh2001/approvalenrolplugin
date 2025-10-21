@@ -1,4 +1,4 @@
-<?php
+p<?php
 $string['pluginname'] = 'Email Approval Verify';
 $string['approvalenrol:enrol'] = 'Approvar can enable user enrolment ';
 $string['approvalenrol:unenrol'] = 'Approvar can disbled user enrolment';
@@ -59,3 +59,10 @@ $string['cannotassigncapability'] = 'Capability {$a} cannot be assign. Please co
 $string['enableapproverreporting'] = 'Enable Course Approver Reporting';
 $string['enableapproverreporting:desc'] = 'Allow course approvers to view and manage Approval dashboard and Requests';
 $string['samevalues'] = 'Old name and New name cannot be same';
+$string['pluginnotenabled'] = 'Plugin Email Approval Enrol is not enabled';
+$string['course_enrol_req_sub'] = 'Course Enrolment Approval Request';
+$string['course_enrol_req_body'] = 'Hi, <p>This is an approval request from the email address <b>{$a->email}</b> for the course <b>{$a->coursename}</b>.<br>
+Please review the details and approve the request by clicking the link below:<br>
+<a href="{$a->url}">{$a->url}</a></p>
+<p> <b>Best Regards.</b> </p>
+';

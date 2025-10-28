@@ -7,6 +7,10 @@ $observers = [
     ],
     [
         'eventname' => '\core\event\config_log_created',
-        'callback' => '\enrol_approvalenrol\event\observer::save_config_data'
-    ]
+        'callback' => '\enrol_approvalenrol\event\observer::save_configdata'
+    ],
+    [
+        'eventname' => '\core\event\user_enrolment_deleted',
+        'callback' => '\enrol_approvalenrol\event\observer::user_unenrolled'
+    ],
 ];

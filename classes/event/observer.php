@@ -3,6 +3,7 @@
 namespace enrol_approvalenrol\event;
 use enrol_approvalenrol\event\approval_requests_updated;
 use \core\event\config_log_created;
+use \core\event\user_enrolment_deleted;
 
 
 class observer {
@@ -46,7 +47,7 @@ class observer {
       * @param \core\event\config_log_created $event
       * @return void
       */
-     public static function save_config_data(config_log_created $event):void {
+     public static function save_configdata(config_log_created $event):void {
          global $DB;
          $eventdata = $event->get_data();
          $config = $eventdata['other'];
@@ -75,5 +76,16 @@ class observer {
                return;
             }
          }
+     }
+
+     public static function user_unenrolled(\core\event\user_enrolment_deleted $event):void {
+         $eventdata = $event->get_data();
+         $userid = $eventdata['other']['userenrolment']['userid'] ?? NULL;
+         if(empty($eventdata['courseid']) || empty($userid)) {
+            return;
+         }
+         \enrol_approvalenrol\local\approvalenrolrequests::remove_courseapprover($eventdata['courseid'], $userid);
+
+         return;
      }
 }

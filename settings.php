@@ -2,7 +2,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-   if($ADMIN->fulltree){ 
+if($ADMIN->fulltree){ 
       global $DB;     
       $settings = new admin_settingpage('enrolsettingsapprovalenrol', get_string('pluginname', 'enrol_approvalenrol'));
       $settings->add(new admin_setting_configtext(
@@ -20,13 +20,17 @@ defined('MOODLE_INTERNAL') || die();
          get_string('defaultfromemail', 'enrol_approvalenrol', \core_user::get_noreply_user()),
       ));
 
-      $userarray = array_keys($DB->get_records('user', null, '', 'email'));
+      $usersarray = \enrol_approvalenrol\local\approvalenrolrequests::fetch_approvers_candidates();
+      $options[0] = '';
+      foreach ($usersarray as $user) {
+         $options[$user->id] = $user->email;
+      }
       $settings->add(new admin_setting_configselect_autocomplete(
          'enrol_approvalenrol/approvers',
          get_string('approver', 'enrol_approvalenrol'),
          get_string('approver_desc', 'enrol_approvalenrol'),
          '',
-         $userarray
+         $options
       ));
 
       $settings->add(new admin_setting_configcheckbox(

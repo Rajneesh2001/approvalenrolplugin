@@ -56,11 +56,11 @@ class enrol_approvalenrol_plugin extends enrol_plugin{
 
         $form = new approval_enrolment_form(null, ['instance' => $instance]);
         $approvalenrol = new approval_enrol((int)$instance->courseid, $USER->email,$USER->firstname,$USER->lastname, $USER->id);
-        
-        if($form->is_submitted()){
-            $approvalenrol->create_request($requestdata);
-        }
 
+        if($form->is_submitted()){
+            $approvalenrol->create_request();
+        }
+        
         $request_status = $approvalenrol->has_made_enrolment_request();
         switch($request_status){
             case approval_enrol::PENDING_REQUEST:

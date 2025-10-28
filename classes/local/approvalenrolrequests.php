@@ -193,6 +193,52 @@ class approvalenrolrequests{
         return $instanceavailable;
     }
 
+    /**
+     * Fetch email approval verify configs
+     * @param int $courseid
+     * @return \stdClass $config
+     */
+    public static function fetch_enrolapprovalenrol_configdata($courseid) {
+
+        global $DB;
+
+        if(empty($courseid)) {
+            throw new \moodle_exception('invalid_courseid');
+        }
+
+        if(!enrol_is_enabled('approvalenrol')) {
+             throw new \moodle_exception('pluginnotenabled', 'enrol_approvalenrol');
+        }
+
+        $approver = $DB->get_field('enrol_approvalenrol_approvers', 'userid', ['courseid' => $courseid]);
+
+        if(!$approver) {
+            $approver = get_config('enrol_approvalenrol');
+            if(!$approver->approvers) {
+                return false;
+            }
+        }
+        
+        return $approver;
+    }
+
+
+    public static function remove_courseapprover($courseid, $userid): void {
+        global $DB;
+
+        try {
+        $recordid = $DB->get_field('enrol_approvalenrol_approvers', 'id', ['courseid' => $courseid, 'userid' => $userid]);
+
+        if($recordid) {
+            $DB->delete_records('enrol_approvalenrol_approvers', ['id' => $recordid]);
+            return;
+        }
+        }catch(\moodle_exception $e) {
+            debugging($e->getMessage(), DEBUG_DEVELOPER);
+        }
+    }
+
+
 
 
 }

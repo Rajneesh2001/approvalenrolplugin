@@ -11,7 +11,14 @@ class approval_enrol {
     public const REQUEST_ALL = 4;
     public static $table = 'enrol_approvalenrol_requests';
 
-    public function __construct(private int $courseid, private string $email, private string $firstname, private string $lastname, private int $userid){}
+    // ID of the approver to whom the approval request mail will be sent;
+    private string $approverid;
+
+    public function __construct(private int $courseid, private string $email, private string $firstname, private string $lastname, private int $userid){
+
+        
+
+    }
    
     /**
      * Provide the enrolment status for the loggedin user.
@@ -20,7 +27,7 @@ class approval_enrol {
     public function has_made_enrolment_request():int{
         global $DB;
         $status = $DB->get_record(self::$table, [
-                'email' => $this->email,
+                'userid' => $this->userid,
                 'courseid' => $this->courseid,
             ], 'approval_status');
         
@@ -35,23 +42,11 @@ class approval_enrol {
      * @return int
      */
     public function create_request():int{
-         global $DB;
+         global $DB, $PAGE;
          if($this->has_made_enrolment_request() !== self::NO_APPROVAL_REQUEST){
-            throw new \moodle_exception(get_string('requestexists', 'enrol_approvalenrol'));
+            redirect(new \moodle_url($PAGE->url));
          }
-         $id = $DB->insert_record(self::$table, [
-                 'email' => $this->email,
-                 'courseid' => $this->courseid,
-                 'firstname' => $this->firstname,
-                 'lastname' => $this->lastname,
-                 'userid' => $this->userid,
-                 'approval_status' => self::PENDING_REQUEST,
-             ]);
-             if($id){
-                $this->send_email_to_user();
-             }
-         
-         die('First configure the approver first');
+
          $id = \enrol_approvalenrol\local\approvalenrolrequests::create_enrol_approval_requests($this->courseid, self::PENDING_REQUEST, $this->userid);
          
          if($id){
@@ -64,19 +59,27 @@ class approval_enrol {
      * send automated mail to the user
      * @return void
      */
-    public function send_email_to_user():void{
+    public function send_email_to_approver():void{
         global $CFG,$USER;
         require_once($CFG->libdir . '/moodlelib.php');
-
-        $touser = \core_user::get_noreply_user();
-        $fromuser = \core_user::get_user($USER->id);
-        $subject = 'Course Enrolment Approval Request';
-
-        //dummy text
-        $text = "Hi this is the approval request from the email {$fromuser->email}";
         
-        if(!\enrol_approvalenrol\local\helper::send_message($fromuser, $touser, $subject, $text)){
-            throw new \moodle_exception(get_string('emailnotsend','enrol_approvalenrol'));
+        $subject = get_string('course_enrol_req_sub', 'enrol_approvalenrol');
+        $messagebodydata = new \stdClass();
+        $messagebodydata->email = isset($fromuser->email)?$fromuser->email:NULL;
+        $messagebodydata->coursename = (get_course($this->courseid))->fullname;
+        $messagebodydata->url = (new \moodle_url('/enrol/approvalenrol/approval.php',['courseid' => $this->courseid, 'status' => 2]))->out(false);
+
+        $configdata = \enrol_approvalenrol\local\approvalenrolrequests::fetch_enrolapprovalenrol_configdata($this->courseid);
+        $fromuser = \core_user::get_user($USER->id);
+        if (is_bool($configdata) && !$configdata) {
+            self::sent_mail_to_siteadmins($fromuser, $subject, $messagebodydata);
+            return;
+        } else {
+            $text = get_string('course_enrol_req_body', 'enrol_approvalenrol', $messagebodydata);
+            $touser = \core_user::get_user(is_object($configdata)?$configdata->approvers:$configdata);
+            if(!\enrol_approvalenrol\local\helper::send_message($fromuser, $touser, $subject, $text)){
+                debugging(get_string('emailnotsend','enrol_approvalenrol'), DEBUG_DEVELOPER);
+            }
         }
     }
 
@@ -137,6 +140,20 @@ class approval_enrol {
         }
 
         return $requestcounts;
+    }
+
+
+    public static function sent_mail_to_siteadmins($sender, $subject, $messagebody) {
+        error_log('Hello World');
+        $admins = get_admins();
+        foreach($admins as $admin) {
+            error_log(print_r($admin, true));
+            $messagebody->email = $admin->email;
+            $text = get_string('course_enrol_req_body', 'enrol_approvalenrol', $messagebody);
+            \enrol_approvalenrol\local\helper::send_message($sender, $admin, $subject, $text);
+        }
+        
+        return true;
     }
 }
 

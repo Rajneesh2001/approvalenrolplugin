@@ -31,7 +31,7 @@ $string['fromemail_desc'] = 'This Email will appear in the sender section of the
 $string['defaultfromemail'] = '{$a->email}';
 $string['successmessagebody'] = 'Approve Message Body';
 $string['successmessagebody_desc'] = 'This content will be used as the main body of the email sent upon approval.';
-$string['emailnotsend'] = 'Email not send, contact site administrator';
+$string['emailnotsend'] = 'Email not send({$a->context}), contact site administrator';
 $string['pendingrequest'] = 'Request was already in Pending state';
 $string['invalid_courseid'] = 'Invalid Course Id';
 $string['approver'] = 'Approvers List';
@@ -66,3 +66,5 @@ Please review the details and approve the request by clicking the link below:<br
 <a href="{$a->url}">{$a->url}</a></p>
 <p> <b>Best Regards.</b> </p>
 ';
+$string['empty_context'] = 'Message body is not provide.';
+$string['nosender'] = 'Sender Email is not provided';

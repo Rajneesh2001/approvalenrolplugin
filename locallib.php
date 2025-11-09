@@ -9,6 +9,7 @@ class approval_enrol {
     public const PENDING_REQUEST = 2;
     public const REQUEST_REJECTED = 3;
     public const REQUEST_ALL = 4;
+    public const PAGE_LIMIT = 10;
     public static $table = 'enrol_approvalenrol_requests';
 
     //Email Triggered context
@@ -96,7 +97,7 @@ class approval_enrol {
      * @return array $requests
      */
 
-    public static function get_approval_user_requests($requeststatus, $courseid):array{
+    public static function get_approval_user_requests($requeststatus, $courseid, $page):array{
         global $DB;
 
         if($courseid <=0 ){
@@ -104,6 +105,7 @@ class approval_enrol {
         }
 
         $params = ['courseid' => $courseid];
+        $params['page'] = $page;
         if($requeststatus !== self::REQUEST_ALL){
             $params['approval_status'] = $requeststatus;
         }

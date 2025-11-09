@@ -5,9 +5,10 @@ defined('MOODLE_INTERNAL') || die();
 use \enrol_approvalenrol\approval_enrol;
 use \enrol_approvalenrol\output\approval_enrol_renderer;
 
-$url = new moodle_url('/enrol/approvalenrol/approval.php');
 $courseid = required_param('courseid',PARAM_INT);
 $status = required_param('status', PARAM_INT);
+$page = optional_param('page', '0', PARAM_RAW);
+$url = new moodle_url('/enrol/approvalenrol/approval.php', ['courseid' => $courseid, 'status' => $status, 'page' => $page]);
 if (!$courseid) {
     throw new moodle_exception('Course Id cannot be 0');
 }
@@ -15,7 +16,6 @@ if(!$status){
     throw new moodle_exception('Status cannot be empty');
 }
 $course = get_course($courseid);
-
 
 if($status == approval_enrol::PENDING_REQUEST){
     $pendingrequest = true;
@@ -30,8 +30,7 @@ $approvalstatusarray = [
         '2' => 'Pending',
         '3' => 'Rejected',
     ];
-
-$titleheading = get_string($status !=4 ? 'approval_requests': 'total_requests', 'enrol_approvalenrol', $approvalstatusarray[$status]);
+$titleheading = get_string($status !=4 ? 'approval_requests': 'total_requests', 'enrol_approvalenrol', ['status' => $approvalstatusarray[$status], 'fullname' => $course->fullname]);
 $PAGE->set_title($titleheading);
 $PAGE->set_heading($titleheading);
 $PAGE->set_url($url);
@@ -40,13 +39,13 @@ $PAGE->set_pagelayout('standard');
 $PAGE->requires->css(new moodle_url('/enrol/approvalenrol/styles.css'));
 $PAGE->requires->js_call_amd('enrol_approvalenrol/approvalrequests', 'init');
 
-$requests = approval_enrol::get_approval_user_requests($status, $courseid);
+$requests = approval_enrol::get_approval_user_requests($status, $courseid, $page);
 $output = html_writer::tag('a', 'Go to Approval Dashboard',['class' => 'btn btn-secondary btn__back','href'=>new moodle_url('/enrol/approvalenrol/approval_dashboard.php',['courseid' => $courseid])]);
 if(empty($requests)){
   $output .= approval_enrol_renderer::render_notice_message('No requests found');
 }else{
 $data = [];
-$sn=1;
+$sn = ($page*10) + 1;
 foreach($requests as $request){
         $tableobject = new stdClass();
         $tableobject->index = $sn;
@@ -82,4 +81,5 @@ echo $OUTPUT->header();
 echo $output;
 if(isset($loader)) echo $loader;
 if(isset($tablehtml)) echo $tablehtml;
+echo $OUTPUT->paging_bar(15, $page, \enrol_approvalenrol\approval_enrol::PAGE_LIMIT, $url);
 echo $OUTPUT->footer();

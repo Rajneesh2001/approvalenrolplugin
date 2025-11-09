@@ -21,7 +21,6 @@ class approvalenrolrequests{
         global $DB;
         $table = \enrol_approvalenrol\approval_enrol::$table;
         $filtercondition = '';
-        $courseid = isset($params['courseid'])??0;
         if(isset($params['courseid'])){
             $filtercondition .= 'AND courseid = :courseid';
         }
@@ -32,13 +31,13 @@ class approvalenrolrequests{
         $sql = "SELECT {$fields} FROM 
         {{$table}} AS er
         JOIN {user} u ON u.id = er.userid
-        WHERE 1=1 $filtercondition
+        WHERE 1=1 $filtercondition 
         ";
 
         if($single){
             return $DB->get_record_sql($sql, $params);
         }else{
-            return $DB->get_records_sql($sql, $params);
+            return $DB->get_records_sql($sql, $params, $params['page'], \enrol_approvalenrol\approval_enrol::PAGE_LIMIT);
         }
     }
 

@@ -109,7 +109,8 @@ class approval_enrol {
         }
 
         try{
-            $requests = $DB->get_records(self::$table, $params);
+            // $requests = $DB->get_records(self::$table, $params);
+            $requests = \enrol_approvalenrol\local\approvalenrolrequests::get_requests_data($params);
             return $requests?:[];
         }catch(\Exception $e) {
             throw new \moodle_exception('Failed to retrieve approval requests: ' . $e->getMessage());

@@ -8,28 +8,33 @@ class approvalenrolrequests{
 
 
     /**
-     * Fetch User Requests
-     * @param string $fields the strings of fields to be fetch from User Requests data
-     * @param int $courseid , fetch the records/record on the basis of courses(course id)  
-     *             if set 0 then fetch the records for all the courses
-     * @param bool $single , if true then fetch all the records of user data , else fetch single record
+     * Fetch User Requests.
+     *
+     * @param array $params Filters requests based on the provided array.
+     * @param string $fields The string of fields to fetch from User Requests data. Defaults to '*'.
+     * @param bool $single If true, fetch a single record; otherwise fetch all matching records. Defaults to false
+     *
+     * @return object|array Returns a single record object if $single is true, otherwise an array of record objects.
      */
     
-    public static function get_requests_data($fields, $courseid, $single){
+    public static function get_requests_data(array $params,string $fields = '*', bool $single = false){
         global $DB;
         $table = \enrol_approvalenrol\approval_enrol::$table;
-        $params = [];
         $filtercondition = '';
-        if($courseid){
+        $courseid = isset($params['courseid'])??0;
+        if(isset($params['courseid'])){
             $filtercondition .= 'AND courseid = :courseid';
-            $params['courseid'] = $courseid; 
         }
+        if(isset($params['approval_status'])) {
+           $filtercondition .= 'AND requeststatus =:requeststatus'; 
+        }
+        $filtercondition = preg_replace('(?<!\s)and', ' and', \core_text::strtolower($filtercondition));
         $sql = "SELECT {$fields} FROM 
         {{$table}} AS er
         JOIN {user} u ON u.id = er.userid
         WHERE 1=1 $filtercondition
         ";
-        
+
         if($single){
             return $DB->get_record_sql($sql, $params);
         }else{

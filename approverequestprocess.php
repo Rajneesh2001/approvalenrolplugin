@@ -1,7 +1,7 @@
 <?php
 
 require_once("../../config.php");
-
+require_once("$CFG->dirroot/enrol/approvalenrol/locallib.php");
 defined('MOODLE_INTERNAL') || die();
 
 $courseid = required_param('courseid', PARAM_INT);

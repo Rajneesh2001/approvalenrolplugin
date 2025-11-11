@@ -7,17 +7,41 @@ class approval_enrol_renderer {
     public static function render_request_action(\stdClass $request, \stdClass $bodydata):string {
         global $OUTPUT;
 
-        $approverequrl = new \moodle_url('/enrol/approvalenrol/approverequestprocess.php',[
+        $actions = [
+            'approve' => [
+                'requeststatus' => \enrol_approvalenrol\approval_enrol::REQUEST_ACCEPTED,
+                'icon' => 'check-solid',
+                'alt' => 'Approve Request',
+                'class' => 'approve',
+                'idprefix' => 'approve-id:'
+            ],
+            'reject' => [
+                'requeststatus' => \enrol_approvalenrol\approval_enrol::REQUEST_REJECTED,
+                'icon' => 'xmark-solid',
+                'alt' => 'Reject Request',
+                'class' => 'reject',
+                'idprefix' => 'reject-id:'. $request->userid
+            ]
+        ];
+        $links = [];
+        foreach ($actions as $action) {
+            $url = new \moodle_url('/enrol/approvalenrol/approverequestprocess.php',[
                 'courseid' => $request->courseid,
                 'userid' => $request->userid,
-                'requeststatus' => \enrol_approvalenrol\approval_enrol::REQUEST_ACCEPTED,
-            ]);;
-        
-        $approverstatus = $OUTPUT->pix_icon('check-solid','Approve Request','enrol_approvalenrol',      ['class'=>'approve','id'=>'approve-id:'. $request->userid,'data-courseid' => $request->courseid, 'data-username' => $bodydata->name]);
+                'requeststatus' => $action['requeststatus']
+            ]);
 
-        $rejectstatus = $OUTPUT->pix_icon('xmark-solid','Reject Request','enrol_approvalenrol',['class'=>'reject','id'=>'reject-id:'. $request->userid,'data-courseid' => $request->courseid, 'data-username' => $bodydata->name]);
+            $icon = $OUTPUT->pix_icon($action['icon'], $action['alt'], 'enrol_approvalenrol',[
+                'class' => $status['class'],
+                'id' => $status['id'],
+                'data-courseid' => $request->courseid,
+                'data-username' => $bodydata->name
+            ]);
 
-        return \html_writer::link($approverequrl,$approverstatus)." ".\html_writer::link($approverequrl,$rejectstatus);
+            $links[] = \html_writer::link($url, $icon);
+        }
+
+        return implode(' ', $links);
     }
 
     public static function render_notice_message(string $message):string{

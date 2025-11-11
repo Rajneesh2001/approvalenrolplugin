@@ -90,67 +90,6 @@ class approval_enrol {
     }
 
     /**
-     * Retrieves user enrolment requests for specific course based on approval requests.
-     * @param int $request status 
-     * @param int $courseid
-     * 
-     * @return array $requests
-     */
-
-    public static function get_approval_user_requests($requeststatus, $courseid, $page):array{
-        global $DB;
-
-        if($courseid <=0 ){
-            throw new \moodle_exception(get_string('invalid_courseid', 'enrol_approvalenrol'));
-        }
-
-        $params = ['courseid' => $courseid];
-        $params['page'] = $page;
-        if($requeststatus !== self::REQUEST_ALL){
-            $params['approval_status'] = $requeststatus;
-        }
-
-        try{
-            // $requests = $DB->get_records(self::$table, $params);
-            $requests = \enrol_approvalenrol\local\approvalenrolrequests::get_requests_data($params);
-            return $requests?:[];
-        }catch(\Exception $e) {
-            throw new \moodle_exception('Failed to retrieve approval requests: ' . $e->getMessage());
-        }
-    }
-
-    /**
-     * Retrieves the following:
-     * approved_counts: the count of users whose enrolment requests were accepted
-     * rejected_counts: the count of users whose enrolment requests were rejected
-     * pending_counts: the counts of users whose enrolment requests are still pending
-     * total_counts: Total Enrolment Requests.
-     * 
-     * @param int $courseid
-     * @return array $requestscountarray
-     */
-    public static function get_request_counts($courseid):array{
-        global $DB;
-        $requestcounts = ['approved_counts' => 0,'rejected_counts' => 0,'pending_counts' => 0,'total_counts' => 0];
-        $sql = "SELECT case when approval_status = " .self::REQUEST_ACCEPTED. " then 'approved_counts'
-                when approval_status = " . self::REQUEST_REJECTED . " then 'rejected_counts'
-                else 'pending_counts' end AS status
-                ,count(approval_status) AS request_counts from {".
-                self::$table ."} 
-                where courseid = :courseid group by approval_status";
-
-        $requestsarray = $DB->get_records_sql($sql, [
-                                    'courseid' => $courseid,
-                                ]);
-        foreach($requestsarray as $requests){
-            $requestcounts[$requests->status] = $requests->request_counts?:0;
-            $requestcounts['total_counts'] += $requests->request_counts;
-        } 
-
-        return $requestcounts;
-    }
-
-    /**
      * Notify approvers about course approval request
      * 
      * @return void

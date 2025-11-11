@@ -25,12 +25,8 @@ if($status == approval_enrol::PENDING_REQUEST){
 }else{
     $context =context_system::instance();
 }
-$approvalstatusarray = [
-        '1' => 'Approved',
-        '2' => 'Pending',
-        '3' => 'Rejected',
-    ];
-$titleheading = get_string($status !=4 ? 'approval_requests': 'total_requests', 'enrol_approvalenrol', ['status' => $approvalstatusarray[$status], 'fullname' => $course->fullname]);
+$approvaldashboard = new \enrol_approvalenrol\approvaldashboard($course->fullname, $course->id, $status);
+$titleheading = $approvaldashboard->get_title();
 $PAGE->set_title($titleheading);
 $PAGE->set_heading($titleheading);
 $PAGE->set_url($url);
@@ -39,14 +35,14 @@ $PAGE->set_pagelayout('standard');
 $PAGE->requires->css(new moodle_url('/enrol/approvalenrol/styles.css'));
 $PAGE->requires->js_call_amd('enrol_approvalenrol/approvalrequests', 'init');
 
-$requests = approval_enrol::get_approval_user_requests($status, $courseid, $page);
+$requests = $approvaldashboard->get_approval_user_requests($status, $page*10);
 $output = html_writer::tag('a', 'Go to Approval Dashboard',['class' => 'btn btn-secondary btn__back','href'=>new moodle_url('/enrol/approvalenrol/approval_dashboard.php',['courseid' => $courseid])]);
 if(empty($requests)){
   $output .= approval_enrol_renderer::render_notice_message('No requests found');
 }else{
 $data = [];
 $sn = ($page*10) + 1;
-foreach($requests as $request){
+foreach($requests['data'] as $request){
         $tableobject = new stdClass();
         $tableobject->index = $sn;
         $tableobject->name = $request->firstname." ".$request->lastname;
@@ -55,7 +51,7 @@ foreach($requests as $request){
         $tableobject->actions = approval_enrol_renderer::render_request_action($request, $tableobject);
         }
         if($status == approval_enrol::REQUEST_ALL){
-            $tableobject->status = $approvalstatusarray[$request->approval_status]?:'N/A';
+            $tableobject->status = $approvaldashboard->get_request_status($request->approval_status)?:'N/A';
         }
         $data[] = $tableobject;
         $sn++;   
@@ -81,5 +77,5 @@ echo $OUTPUT->header();
 echo $output;
 if(isset($loader)) echo $loader;
 if(isset($tablehtml)) echo $tablehtml;
-echo $OUTPUT->paging_bar(15, $page, \enrol_approvalenrol\approval_enrol::PAGE_LIMIT, $url);
+echo $OUTPUT->paging_bar($approvaldashboard->get_requestcounts_by_status(), $page, approval_enrol::PAGE_LIMIT, $url);
 echo $OUTPUT->footer();

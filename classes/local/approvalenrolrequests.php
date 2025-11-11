@@ -22,18 +22,17 @@ class approvalenrolrequests{
         $table = \enrol_approvalenrol\approval_enrol::$table;
         $filtercondition = '';
         if(isset($params['courseid'])){
-            $filtercondition .= 'AND courseid = :courseid';
+            $filtercondition .= 'AND er.courseid = :courseid';
         }
         if(isset($params['approval_status'])) {
-           $filtercondition .= 'AND requeststatus =:requeststatus'; 
+           $filtercondition .= 'AND er.approval_status =:approval_status'; 
         }
-        $filtercondition = preg_replace('(?<!\s)and', ' and', \core_text::strtolower($filtercondition));
+        $filtercondition = preg_replace('/(?<!\s)and/', ' and', \core_text::strtolower($filtercondition));
         $sql = "SELECT {$fields} FROM 
         {{$table}} AS er
         JOIN {user} u ON u.id = er.userid
         WHERE 1=1 $filtercondition 
         ";
-
         if($single){
             return $DB->get_record_sql($sql, $params);
         }else{

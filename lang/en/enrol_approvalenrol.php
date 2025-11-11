@@ -1,4 +1,4 @@
-p<?php
+<?php
 $string['pluginname'] = 'Email Approval Verify';
 $string['approvalenrol:enrol'] = 'Approvar can enable user enrolment ';
 $string['approvalenrol:unenrol'] = 'Approvar can disbled user enrolment';
@@ -19,6 +19,7 @@ $string['rejectmsg'] = 'Your enrolment request has been rejected by the approver
 Please contact the approver for further clarification or to resolve the issue.
 ';
 $string['approve_req_dashboard'] = 'Approval Dashboard';
+$string['course_approve_req_dashboard'] = '{$a->fullname} Approval Dashboard';
 $string['approved_counts'] = 'Requests Approved';
 $string['rejected_counts'] = 'Requests Rejected';
 $string['pending_counts'] = 'Requests Pending';
@@ -68,3 +69,4 @@ Please review the details and approve the request by clicking the link below:<br
 ';
 $string['empty_context'] = 'Message body is not provide.';
 $string['nosender'] = 'Sender Email is not provided';
+$string['invalidstatus'] = 'Invalid Approval Request Status';

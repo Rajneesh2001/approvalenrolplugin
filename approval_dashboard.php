@@ -17,28 +17,29 @@ $url = new moodle_url('/enrol/approvalenrol/approval_dashboard.php', ['courseid'
 
 // Setting PAGE Object
 
-$titleheading = get_string('approve_req_dashboard', 'enrol_approvalenrol');
+$titleheading = get_string('course_approve_req_dashboard', 'enrol_approvalenrol',['fullname' => $course->fullname]);
 $PAGE->set_url($url);
 $PAGE->set_pagelayout('standard');
 $PAGE->set_context(context_course::instance($courseid));
 $PAGE->set_title($titleheading);
 $PAGE->set_heading($titleheading);
 $PAGE->requires->css(new moodle_url('/enrol/approvalenrol/styles.css'));
-$data = \enrol_approvalenrol\approval_enrol::get_request_counts($courseid);
+$approvaldashboard = new \enrol_approvalenrol\approvaldashboard($course->fullname, $course->id);
+$data = $approvaldashboard->get_request_counts($courseid);
 $chartcontext = [
     [
         'name' => get_string('approved_counts', 'enrol_approvalenrol'),
-        'y' => (int)$data['approved_counts'],
+        'y' => (int)$data['approved'],
         'color' => '#5e72e4'
     ],
     [
         'name' => get_string('rejected_counts', 'enrol_approvalenrol'),  
-        'y' => (int)$data['rejected_counts'],
+        'y' => (int)$data['rejected'],
         'color' => '#efd411'
     ],
     [
         'name' => get_string('pending_counts', 'enrol_approvalenrol'),
-        'y' => (int)$data['pending_counts'],
+        'y' => (int)$data['pending'],
         'color' => 'orange'
     ]
 ];

@@ -20,7 +20,7 @@ class approval_enrol_renderer {
                 'icon' => 'xmark-solid',
                 'alt' => 'Reject Request',
                 'class' => 'reject',
-                'idprefix' => 'reject-id:'. $request->userid
+                'idprefix' => 'reject-id:'
             ]
         ];
         $links = [];
@@ -32,8 +32,8 @@ class approval_enrol_renderer {
             ]);
 
             $icon = $OUTPUT->pix_icon($action['icon'], $action['alt'], 'enrol_approvalenrol',[
-                'class' => $status['class'],
-                'id' => $status['id'],
+                'class' => $action['class'],
+                'id' => $action['idprefix'].$request->userid,
                 'data-courseid' => $request->courseid,
                 'data-username' => $bodydata->name
             ]);

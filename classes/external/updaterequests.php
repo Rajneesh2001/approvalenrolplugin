@@ -7,6 +7,8 @@ use external_value;
 use external_function_parameters;
 use external_multiple_structure;
 use external_single_structure;
+use \enrol_approvalenrol\local\approvalenrolrequests;
+use \enrol_approvalenrol\approval_enrol;
 
 defined('MOODLE_INTERNAL') || die;
 
@@ -36,21 +38,18 @@ class updaterequests extends external_api{
     }
 
     public static function execute($userid,$courseid,$requeststatus){
-        global $DB;
+        global $DB,$CFG;
+        require_once("$CFG->dirroot/enrol/approvalenrol/locallib.php");
         // Start Transaction
-
         $transaction = $DB->start_delegated_transaction();
         try{
             $DB->execute(
-                'UPDATE {'. \enrol_approvalenrol\approval_enrol::$table .'} SET approval_status = :status WHERE userid = :userid',
-                ['status' => $requeststatus, 'userid' => $userid]
+                'UPDATE {'. approval_enrol::$table .'} SET approval_status = :status WHERE userid = :userid and courseid= :courseid',
+                ['status' => $requeststatus, 'userid' => $userid, 'courseid' => $courseid]
             );
-
             
         // Commit Transaction
-            $updatedusersdata = $DB->get_records(\enrol_approvalenrol\approval_enrol::$table,[
-                'approval_status' => '2'
-            ],'','*');  
+            $updatedusersdata = approvalenrolrequests::get_requests_data(['courseid' => $courseid, 'approval_status' => approval_enrol::PENDING_REQUEST]);
 
             $transaction->allow_commit();
 

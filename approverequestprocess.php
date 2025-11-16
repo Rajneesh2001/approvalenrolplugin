@@ -13,7 +13,7 @@ if(!$courseid || !$userid ){
 $response =  \enrol_approvalenrol\external\updaterequests::execute($userid, $courseid, $requeststatus);
 if($response){
     $userdisplayname = (\core_user::get_user($userid))->firstname;
-    $requeststatus =  $requeststatus?'approved':'rejected';
+    $requeststatus =  $requeststatus== \enrol_approvalenrol\approval_enrol::REQUEST_ACCEPTED?'approved':'rejected';
     \core\notification::add("User $userdisplayname request has been $requeststatus",\core\output\notification::NOTIFY_INFO);
 
     redirect(new moodle_url('/enrol/approvalenrol/approval.php',[

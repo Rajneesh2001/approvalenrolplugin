@@ -44,6 +44,7 @@ $chartcontext = [
     ]
 ];
 $PAGE->requires->js_call_amd('enrol_approvalenrol/initchart', 'init', [$chartcontext]);
+
 echo $OUTPUT->header();
 $templatecontext = [
     'data' => $data,

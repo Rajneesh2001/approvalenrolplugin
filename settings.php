@@ -3,8 +3,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 if($ADMIN->fulltree){ 
-      global $DB;     
-      $settings = new admin_settingpage('enrolsettingsapprovalenrol', get_string('pluginname', 'enrol_approvalenrol'));
+      global $DB;
+      
       $settings->add(new admin_setting_configtext(
          'enrol_approvalenrol/fromname',
          get_string('fromname','enrol_approvalenrol'),
@@ -32,13 +32,11 @@ if($ADMIN->fulltree){
          '',
          $options
       ));
-
       $settings->add(new admin_setting_configcheckbox(
          'enrol_approvalenrol/enableapproverreporting',
          get_string('enableapproverreporting', 'enrol_approvalenrol'),
          get_string('enableapproverreporting:desc', 'enrol_approvalenrol'),
          false
       ));
-
-      $ADMIN->add('enrolments', $settings);
    }
+

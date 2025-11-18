@@ -16,21 +16,14 @@ if(!$status){
     throw new moodle_exception('Status cannot be empty');
 }
 $course = get_course($courseid);
-
-if($status == approval_enrol::PENDING_REQUEST){
-    $pendingrequest = true;
-    //Ensure login and permissions
-    require_login($course); //Ensure user is logged in and set up more nav
-    $context = context_course::instance($courseid); 
-}else{
-    $context =context_system::instance();
-}
+require_login($course);
 $approvaldashboard = new \enrol_approvalenrol\approvaldashboard($course->fullname, $course->id, $status);
 $titleheading = $approvaldashboard->get_title();
+$PAGE->set_context(context_course::instance($courseid));
+
 $PAGE->set_title($titleheading);
 $PAGE->set_heading($titleheading);
 $PAGE->set_url($url);
-$PAGE->set_context($context);
 $PAGE->set_pagelayout('standard');
 $PAGE->requires->css(new moodle_url('/enrol/approvalenrol/styles.css'));
 $PAGE->requires->js_call_amd('enrol_approvalenrol/approvalrequests', 'init');

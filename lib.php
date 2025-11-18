@@ -43,6 +43,11 @@ class enrol_approvalenrol_plugin extends enrol_plugin{
         $instanceid = parent::add_instance($courseid,$fields);
         return $instanceid;
     }
+    
+    public function edit_instance_validation($data, $files, $instance, $context) {
+        return [];
+    }
+
     public function enrol_self(stdClass $instance) {
         global $USER;
         $this->enrol_user($instance,$USER->id);
@@ -71,21 +76,26 @@ class enrol_approvalenrol_plugin extends enrol_plugin{
                 $this->enrol_user($instance, $USER->id);
         }
 
-        // if($request_status == PENDING_REQUEST){
-        //     return $OUTPUT->box(get_string('msg', 'enrol_approvalenrol'));
-        // }
-
         ob_start();
         $form->display();
         $output = ob_get_clean();
         return $OUTPUT->box($output);
 
     }
+    
     public function allow_manage($instance){
         return true;
     }
+
+    /**
+     * Is it possible to hide/show enrol instance via standard UI?
+     *
+     * @param stdClass $instance
+     * @return bool
+    */
     public function can_hide_show_instance($instance){
-        return parent::can_hide_show_instance($instance);
+        $context = \context_course::instance($instance->courseid);
+        return has_capability('enrol/approvalenrol:config', $context);
     }
 
     public function can_delete_instance($instance){
@@ -105,5 +115,6 @@ class enrol_approvalenrol_plugin extends enrol_plugin{
     public function upsert_user_data($form){
         $formdata = $form->get_data();
     }   
+
 
 }

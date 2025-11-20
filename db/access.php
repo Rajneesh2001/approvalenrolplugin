@@ -9,4 +9,12 @@ $capabilities= [
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE
     ],
+    'enrol/approvalenrol:unenrol' => [
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_COURSE,
+        'archetype' => [
+            'manager' => CAP_ALLOW,
+            'teacher' => CAP_ALLOW
+        ]
+    ]
 ];

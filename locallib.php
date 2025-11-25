@@ -35,7 +35,6 @@ class approval_enrol {
                 'userid' => $this->userid,
                 'courseid' => $this->courseid,
             ], 'approval_status');
-        
         if(!$status){
             return self::NO_APPROVAL_REQUEST;
         }
@@ -46,17 +45,23 @@ class approval_enrol {
      * Create user enrolment record in the Approval Requests table and send the email to notify the Approver
      * @return int
      */
-    public function create_request():int{
+    public function create_request($request = null):int{
          global $DB, $PAGE;
          if($this->has_made_enrolment_request() !== self::NO_APPROVAL_REQUEST){
             redirect(new \moodle_url($PAGE->url));
          }
 
-         $id = \enrol_approvalenrol\local\approvalenrolrequests::create_enrol_approval_requests($this->courseid, self::PENDING_REQUEST, $this->userid);
+         if(is_null($request)) {
+            $request = self::PENDING_REQUEST;
+         }
+
+         $id = \enrol_approvalenrol\local\approvalenrolrequests::create_enrol_approval_requests($this->courseid, $request, $this->userid);
          
          if($id){
             $this->notify_approveruser();
-         }
+         }else {
+            throw new \moodle_exception('Record not Inserted', 'enrol_approvalenrol');
+        }
          return $id;
     }
 

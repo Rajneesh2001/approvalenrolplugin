@@ -40,6 +40,7 @@ class updaterequests extends external_api{
     public static function execute($userid,$courseid,$requeststatus){
         global $DB,$CFG;
         require_once("$CFG->dirroot/enrol/approvalenrol/locallib.php");
+        
         // Start Transaction
         $transaction = $DB->start_delegated_transaction();
         try{

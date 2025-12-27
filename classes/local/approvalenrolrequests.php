@@ -17,15 +17,31 @@ class approvalenrolrequests{
      * @return object|array Returns a single record object if $single is true, otherwise an array of record objects.
      */
     
-    public static function get_requests_data(array $params,string $fields = '*', bool $single = false){
+    public static function get_requests_data(array $params,string $fields = 'er.*', bool $single = false){
         global $DB;
+        
         $table = \enrol_approvalenrol\approval_enrol::$table;
+        
         $filtercondition = '';
+        if (isset($params['userid'])) {
+            $filtercondition .= 'AND er.userid = :userid';
+        }
         if(isset($params['courseid'])){
             $filtercondition .= 'AND er.courseid = :courseid';
         }
         if(isset($params['approval_status'])) {
            $filtercondition .= 'AND er.approval_status =:approval_status'; 
+        }
+        if($fields != 'er.*') {
+            $fieldsarray = array_map('trim', explode(',', $fields));
+
+            foreach($fieldsarray as $index=>$item) {
+                $fieldsarray[$index] = 'er.' . $item;
+            }
+
+            $fields = implode(',', $fieldsarray);
+        } else  {
+            $fields .= ',u.email,u.firstname,u.lastname';
         }
         $filtercondition = preg_replace('/(?<!\s)and/', ' and', \core_text::strtolower($filtercondition));
         $sql = "SELECT {$fields} FROM 
@@ -43,7 +59,6 @@ class approvalenrolrequests{
 
     public static function create_enrol_approval_requests($courseid, $approval_status, $userid){
         global $DB;
-
         $newrequest = new \stdClass();
         $newrequest->courseid = $courseid;
         $newrequest->approval_status = $approval_status;
@@ -66,6 +81,29 @@ class approvalenrolrequests{
         $event->trigger();
 
         return $newrequestid;
+    }
+
+    /**
+     * Update Course enrolment request data
+     * @param \stdclass $request
+     * @param array $data
+     * 
+     * @return bool true
+     * @throw dml exception
+     */
+    public static function update_enrol_approval_requestsdata(\stdclass $request) {
+        global $DB;
+
+        $transaction = $DB->start_delegated_transaction();
+        
+        $request->timemodified = time();
+
+        $DB->update_record(\enrol_approvalenrol\approval_enrol::$table, $request);
+        
+        $transaction->allow_commit();
+
+        return true;
+        
     }
 
     public static function fetch_approvers_candidates () {

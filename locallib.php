@@ -9,47 +9,62 @@ class approval_enrol {
     public const PENDING_REQUEST = 2;
     public const REQUEST_REJECTED = 3;
     public const REQUEST_ALL = 4;
+    public const ENROL_STATUS_REVOKED = 5;
+    public const ENROL_STATUS_UNENROLED = 6;
     public const PAGE_LIMIT = 10;
     public static $table = 'enrol_approvalenrol_requests';
 
     //Email Triggered context
     public const EMAIL_REQUESTED = 6;
 
-    // ID of the approver to whom the approval request mail will be sent;
-    private string $approverid;
-    private string $coursefullname;
+    private string $coursefullname; 
 
-    public function __construct(private int $courseid, private string $email, private string $firstname, private string $lastname, private int $userid){
+    private ?\stdClass $requestdata;
+    
+    public function __construct(private int $courseid, private string $userid){
     
       $this->coursefullname = (get_course($this->courseid))->fullname;    
+
+      $this->requestdata = \enrol_approvalenrol\local\approvalenrolrequests::get_requests_data([
+        'userid' => $this->userid,
+        'courseid' => $this->courseid
+      ], single: true)?:NULL;
 
     }
    
     /**
-     * Provide the enrolment status for the loggedin user.
-     * @return int
+     * Check if user has made enrolment request for this course.
+     * @return bool True if record exists
      */
-    public function has_made_enrolment_request():int{
-        global $DB;
-        $status = $DB->get_record(self::$table, [
-                'userid' => $this->userid,
-                'courseid' => $this->courseid,
-            ], 'approval_status');
-        if(!$status){
-            return self::NO_APPROVAL_REQUEST;
-        }
-        return $status->approval_status;
+    public function has_made_enrolment_request():bool{
+       return $this->requestdata !== null;
     }
 
     /**
+     * Fetch User approval Request status
+     * @return int 
+     */
+    public function get_request_status():int {
+        //Check if user is unenrolled
+        if($this->requestdata->is_unenrolled) {
+            return self::ENROL_STATUS_UNENROLED;die;
+        }
+
+        //check if user is suspended in the course
+        if($this->requestdata->is_revoked) {
+            return self::ENROL_STATUS_REVOKED;
+        }
+
+        return $this->requestdata->approval_status;
+    }
+    /**
      * Create user enrolment record in the Approval Requests table and send the email to notify the Approver
+     * @param \stdClass $request
+     * @param bool $shouldnotify if true an email notification is trigger to approver, else skip the notification part.
      * @return int
      */
-    public function create_request($request = null):int{
-         global $DB, $PAGE;
-         if($this->has_made_enrolment_request() !== self::NO_APPROVAL_REQUEST){
-            redirect(new \moodle_url($PAGE->url));
-         }
+    public function create_request($request, $shouldnotify):int{
+         global $PAGE;
 
          if(is_null($request)) {
             $request = self::PENDING_REQUEST;
@@ -58,12 +73,42 @@ class approval_enrol {
          $id = \enrol_approvalenrol\local\approvalenrolrequests::create_enrol_approval_requests($this->courseid, $request, $this->userid);
          
          if($id){
-            $this->notify_approveruser();
+            if($shouldnotify) {
+                $this->notify_approveruser();
+            }
          }else {
             throw new \moodle_exception('Record not Inserted', 'enrol_approvalenrol');
         }
          return $id;
     }
+
+    /**
+     * Update User Request as per $data array
+     * @param $dataarray
+     * @return true
+     */
+    public function update_request(array $dataarray):bool {
+
+        if(is_null($this->requestdata)) {
+            debugging('Cannot update request data', DEBUG_DEVELOPER);
+        }
+
+        $updaterequest = new \stdClass();
+        $updaterequest->id = $this->requestdata->id;
+
+        foreach($dataarray as $field => $data) {
+            $updaterequest->{$field} = $data;
+        }
+        try {
+        \enrol_approvalenrol\local\approvalenrolrequests::update_enrol_approval_requestsdata($updaterequest);
+        return true;
+        } catch(\moodle_exception $e) {
+            debugging($e->getMessage(), DEBUG_DEVELOPER);
+            return false;
+        }
+    }
+
+
 
     /**
      * send automated mail to the approver

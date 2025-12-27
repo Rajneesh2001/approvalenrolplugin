@@ -13,4 +13,9 @@ $observers = [
         'eventname' => '\core\event\user_enrolment_deleted',
         'callback' => '\enrol_approvalenrol\event\observer::user_unenrolled'
     ],
+    [
+        'eventname' => '\core\event\user_enrolment_updated',
+        'callback' =>  '\enrol_approvalenrol\event\observer::update_user_enrolment',
+        'includefile' => '/enrol/approvalenrol/locallib.php'
+    ]
 ];

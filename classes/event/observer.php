@@ -88,4 +88,33 @@ class observer {
 
          return;
      }
+
+     /**
+      * Toggle is_revoke setting according to user enrolment status
+      * @param \core\event\user_enrolment_updated $event
+      * @return void
+      */
+     public static function update_user_enrolment(\core\event\user_enrolment_updated $event):void {
+       $eventdata = $event->get_data();
+
+       $enrolment = $event->get_record_snapshot('user_enrolments', $event->objectid);
+
+       
+       $request = \enrol_approvalenrol\local\approvalenrolrequests::get_requests_data([
+            'userid' => $enrolment->userid,
+            'courseid' => $eventdata['courseid']
+        ], single: true);
+
+      if ($request === null || $request === false) {
+        debugging('No approval request found for suspended user', DEBUG_DEVELOPER);
+        return;
+       }
+    
+      
+      $request->is_revoked = $enrolment->status;
+
+      \enrol_approvalenrol\local\approvalenrolrequests::update_enrol_approval_requestsdata($request);
+
+      return;
+     }
 }

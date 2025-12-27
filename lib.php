@@ -55,10 +55,13 @@ function enrol_approvalenrol_extend_navigation_course($parentnode,$course){
 
 class enrol_approvalenrol_plugin extends enrol_plugin{
 
-    const ENROL_INSTANCE_DISABLED = 0;
-    const ENROL_INSTANCE_ENABLED = 1;
-    const STUDENT_ROLE = 5;
-    
+    private const ENROL_INSTANCE_DISABLED = 0;
+    private const ENROL_INSTANCE_ENABLED = 1;
+    private const STUDENT_ROLE = 5;
+
+    private bool $autoapprove = false;
+    private bool $autoreject = false;
+
     /**
      * We don't invent our own UI/validation code path.
      *
@@ -143,42 +146,41 @@ class enrol_approvalenrol_plugin extends enrol_plugin{
         require_once($CFG->dirroot . '/enrol/approvalenrol/classes/approval_enrolment_form.php');
         require_once($CFG->dirroot. '/enrol/approvalenrol/locallib.php');
 
+        $this->load_config_settings($instance);
         $form = new approval_enrolment_form(null, ['instance' => $instance]);
-        $approvalenrol = new approval_enrol((int)$instance->courseid, $USER->email,$USER->firstname,$USER->lastname, $USER->id);        
+        $approvalenrol = new approval_enrol((int)$instance->courseid, $USER->id);
+        
+        if(!$approvalenrol->has_made_enrolment_request()) {
+            ob_start();
+            $form->display();
+            $output = ob_get_clean();
+            return $OUTPUT->box($output);
+        }
+
+        $status = $approvalenrol->get_request_status();
     
         if($form->is_submitted()){
-            if($instance->customint3 && ($instance->customint1 || $instance->customint2)) {
+            $approvalstatus = $approvalenrol::PENDING_REQUEST;
 
-                if($instance->customint1 == $instance->customint2) {
-                throw new \moodle_exception('autoapprove_error', 'enrol_approvalenrol');
-                }
-
-                if($instance->customint1) {
-                    $status = approval_enrol::REQUEST_ACCEPTED;
-                } else if($instance->customint2) {
-                    $status = approval_enrol::REQUEST_REJECTED;
-                }
-                $approvalenrol->create_request($status);
-                
-            }else{
-                $approvalenrol->create_request();
-            }            
-        }
-        $request_status = $approvalenrol->has_made_enrolment_request();
-        
-        switch($request_status){
-            case approval_enrol::PENDING_REQUEST:
-                return $OUTPUT->box(get_string('msg', 'enrol_approvalenrol'));
-            case approval_enrol::REQUEST_REJECTED:
-                return $OUTPUT->box(get_string('rejectmsg', 'enrol_approvalenrol'));
-            case approval_enrol::REQUEST_ACCEPTED:
-                $this->enrol_self($instance);
+            if($this->autoapprove || $this->autoreject) {
+                    $approvalstatus = $this->autoapprove?$approvalenrol::REQUEST_ACCEPTED:$approvalenrol::REQUEST_REJECTED;
+            }
+            
+            if ($status === $approvalenrol::ENROL_STATUS_UNENROLED) {
+                $approvalenrol->update_request(['is_unenrolled' => 0, 'approval_status' => $approvalstatus]);
+            } else if ($status === $approvalenrol::NO_APPROVAL_REQUEST) {
+                $approvalenrol->create_request($approvalstatus, $approvalstatus === $approvalenrol::PENDING_REQUEST ? true : false );
+            }
+         
         }
 
-        ob_start();
-        $form->display();
-        $output = ob_get_clean();
-        return $OUTPUT->box($output);
+        return match($status) {
+            approval_enrol::REQUEST_ACCEPTED => $this->enrol_self($instance),
+            approval_enrol::REQUEST_REJECTED => $OUTPUT->box(get_string('rejectmsg', 'enrol_approvalenrol')),
+            approval_enrol::ENROL_STATUS_REVOKED => $OUTPUT->box(get_string('enrolrevoke', 'enrol_approvalenrol')),
+
+            default => $OUTPUT->box(get_string('msg', 'enrol_approvalenrol'))
+        };
 
     }
     
@@ -230,13 +232,11 @@ class enrol_approvalenrol_plugin extends enrol_plugin{
     public function is_self_enrol_available($instance){
         return true;
     }
+    
     public function allow_unenrol(stdclass $instance){
         // Users with unenrol cap may unenrol other users manually manually.
         return true;
     }
-    // public function upsert_user_data($form){
-    //     $formdata = $form->get_data();
-    // }
 
     /**
      * Returns array of status (yes or no)
@@ -248,5 +248,48 @@ class enrol_approvalenrol_plugin extends enrol_plugin{
             self::ENROL_INSTANCE_DISABLED => get_string('no', 'enrol_approvalenrol'),
             self::ENROL_INSTANCE_ENABLED => get_string('yes', 'enrol_approvalenrol')
         ];
+    }
+
+    /**
+     * Load config settings 
+     * @param \stdClass $instance
+     * @return void
+     */
+    private function load_config_settings($instance):void {
+        
+        if($instance->customint3 && ($instance->customint1 || $instance->customint2)) {
+
+            $this->autoapprove = !empty($instance->customint1);
+            $this->autoreject = !empty($instance->customint2);
+
+            if(!($this->autoapprove XOR $this->autoreject)) {
+                    debugging(get_string('autoapprove_error', 'enrol_approvalenrol'), DEBUG_DEVELOPER);     
+                    $this->autoapprove = $this->autoreject = false;
+                    return ;
+            }
+        }
+    }
+
+    public function unenrol_user(stdclass $instance, $userid) {
+        
+        global $CFG;
+        require_once($CFG->dirroot. '/enrol/approvalenrol/locallib.php');
+
+        $approval_enrolinstance = new approval_enrol($instance->courseid, $userid);
+
+        $request = enrol_approvalenrol\local\approvalenrolrequests::get_requests_data([
+            'userid' => $userid,
+            'courseid' => $instance->courseid
+        ], single: true);
+
+        if ($request) {
+            $request->is_unenrolled = 1;
+            $approval_enrolinstance->update_request($request);
+        } else {
+            debugging('Approval request missing on unenrol:userid: '. $userid. 'for courseid: '. $instance->courseid);
+        }
+        
+
+        parent::unenrol_user($instance, $userid);
     }
 }

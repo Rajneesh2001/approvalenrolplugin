@@ -107,6 +107,9 @@ class enrol_approvalenrol_plugin extends enrol_plugin{
      */
     public function enrol_self(stdClass $instance) {
         global $USER;
+        if(\enrol_approvalenrol\local\approvalenrolrequests::is_user_enrolled($instance->id, $USER->id)) {
+            return;
+        }
         $fullname = $USER->firstname. ' '. $USER->lastname;
         $this->enrol_user($instance, $USER->id, self::STUDENT_ROLE, time());
         core\notification::success(get_string('enrol_success_message', 'enrol_approvalenrol', $fullname));

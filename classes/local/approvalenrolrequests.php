@@ -194,6 +194,23 @@ class approvalenrolrequests{
         ]);
     }
 
+    /**
+     * Check if user is actively enrolled via this enrolment instance
+     * 
+     * @param int $enrolmentinstanceid
+     * @param int|stdClass $userid 
+     * @return bool
+     */
+    public static function is_user_enrolled(int $enrolmentinstanceid, $userid) {
+        global $DB;
+
+        return $DB->record_exists('user_enrolments', [
+            'enrolid' => $enrolmentinstanceid,
+            'userid' => $userid,
+            'status' => ENROL_USER_ACTIVE
+        ]);
+    }
+
      public static function upsert_course_approver(\stdClass $formdata)
     {
         if (isset($formdata) && is_numeric($formdata->userid) && !empty($formdata->userid)) {

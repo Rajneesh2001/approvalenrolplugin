@@ -31,23 +31,19 @@ class approval_enrol {
       ], single: true)?:NULL;
 
     }
-   
-    /**
-     * Check if user has made enrolment request for this course.
-     * @return bool True if record exists
-     */
-    public function has_made_enrolment_request():bool{
-       return $this->requestdata !== null;
-    }
 
     /**
      * Fetch User approval Request status
      * @return int 
      */
     public function get_request_status():int {
+        //Check if request exists
+        if($this->requestdata === null){
+            return self::NO_APPROVAL_REQUEST;
+        }
         //Check if user is unenrolled
         if($this->requestdata->is_unenrolled) {
-            return self::ENROL_STATUS_UNENROLED;die;
+            return self::ENROL_STATUS_UNENROLED;
         }
 
         //check if user is suspended in the course
@@ -87,7 +83,7 @@ class approval_enrol {
      * @param $dataarray
      * @return true
      */
-    public function update_request(array $dataarray):bool {
+    public function update_request(array $dataarray, bool $shouldnotify):bool {
 
         if(is_null($this->requestdata)) {
             debugging('Cannot update request data', DEBUG_DEVELOPER);
@@ -101,6 +97,9 @@ class approval_enrol {
         }
         try {
         \enrol_approvalenrol\local\approvalenrolrequests::update_enrol_approval_requestsdata($updaterequest);
+        if($shouldnotify) {
+            $this->notify_approveruser();
+        }
         return true;
         } catch(\moodle_exception $e) {
             debugging($e->getMessage(), DEBUG_DEVELOPER);

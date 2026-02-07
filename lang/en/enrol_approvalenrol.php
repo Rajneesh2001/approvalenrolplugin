@@ -80,4 +80,4 @@ $string['autoapprovereject_help'] = 'Enable or disable the auto-approve-reject o
 $string['autoapprovereject'] = 'Enable Auto Approve/Reject';
 $string['enableapproverreporting:desc'] = 'Allow course approvers to view and manage Approval dashboard and Requests';
 $string['update_failed'] = 'Request Update Failed';
-$string['enrolrevoke'] = 'Course access revoked. Contact your teacher to resolve this issue."';
+$string['enrolrevoke'] = 'Course access revoked. Contact your teacher to resolve this issue.';

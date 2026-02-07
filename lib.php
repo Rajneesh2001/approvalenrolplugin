@@ -152,13 +152,6 @@ class enrol_approvalenrol_plugin extends enrol_plugin{
         $this->load_config_settings($instance);
         $form = new approval_enrolment_form(null, ['instance' => $instance]);
         $approvalenrol = new approval_enrol((int)$instance->courseid, $USER->id);
-        
-        if(!$approvalenrol->has_made_enrolment_request()) {
-            ob_start();
-            $form->display();
-            $output = ob_get_clean();
-            return $OUTPUT->box($output);
-        }
 
         $status = $approvalenrol->get_request_status();
     
@@ -170,19 +163,26 @@ class enrol_approvalenrol_plugin extends enrol_plugin{
             }
             
             if ($status === $approvalenrol::ENROL_STATUS_UNENROLED) {
-                $approvalenrol->update_request(['is_unenrolled' => 0, 'approval_status' => $approvalstatus]);
+                $approvalenrol->update_request(['is_unenrolled' => 0, 'approval_status' => $approvalstatus], true);
             } else if ($status === $approvalenrol::NO_APPROVAL_REQUEST) {
                 $approvalenrol->create_request($approvalstatus, $approvalstatus === $approvalenrol::PENDING_REQUEST ? true : false );
             }
+
+            redirect(new moodle_url('/enrol/index.php',['id'=>$instance->courseid]));
          
         }
+
+        ob_start();
+        $form->display();
+        $output = ob_get_clean();
 
         return match($status) {
             approval_enrol::REQUEST_ACCEPTED => $this->enrol_self($instance),
             approval_enrol::REQUEST_REJECTED => $OUTPUT->box(get_string('rejectmsg', 'enrol_approvalenrol')),
             approval_enrol::ENROL_STATUS_REVOKED => $OUTPUT->box(get_string('enrolrevoke', 'enrol_approvalenrol')),
+            approval_enrol::PENDING_REQUEST => $OUTPUT->box(get_string('msg', 'enrol_approvalenrol')),
 
-            default => $OUTPUT->box(get_string('msg', 'enrol_approvalenrol'))
+            default => $OUTPUT->box($output)
         };
 
     }
@@ -273,6 +273,12 @@ class enrol_approvalenrol_plugin extends enrol_plugin{
         }
     }
 
+    /**
+    * Unenrol user from course and update approval status
+    * @param \stdClass $instance
+    * @param mixed $userid
+    * @return void
+    */
     public function unenrol_user(stdclass $instance, $userid) {
         
         global $CFG;
@@ -280,19 +286,18 @@ class enrol_approvalenrol_plugin extends enrol_plugin{
 
         $approval_enrolinstance = new approval_enrol($instance->courseid, $userid);
 
-        $request = enrol_approvalenrol\local\approvalenrolrequests::get_requests_data([
-            'userid' => $userid,
-            'courseid' => $instance->courseid
-        ], single: true);
+        $request = $approval_enrolinstance->get_request_status();
 
         if ($request) {
-            $request->is_unenrolled = 1;
-            $approval_enrolinstance->update_request($request);
+            $approval_enrolinstance->update_request([
+                'is_unenrolled' => true
+            ], false
+            );
         } else {
-            debugging('Approval request missing on unenrol:userid: '. $userid. 'for courseid: '. $instance->courseid);
+            debugging('Approval request missing on unenrol:userid: '. $userid. 'for courseid: '. $instance->courseid,DEBUG_DEVELOPER);
         }
         
 
-        parent::unenrol_user($instance, $userid);
+        return parent::unenrol_user($instance, $userid);
     }
 }

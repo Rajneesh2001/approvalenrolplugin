@@ -12,7 +12,7 @@ class approval_enrol {
     public const ENROL_STATUS_REVOKED = 5;
     public const ENROL_STATUS_UNENROLED = 6;
     public const PAGE_LIMIT = 10;
-    public static $table = 'enrol_approvalenrol_requests';
+    public const TABLE = 'enrol_approvalenrol_requests';
 
     //Email Triggered context
     public const EMAIL_REQUESTED = 6;

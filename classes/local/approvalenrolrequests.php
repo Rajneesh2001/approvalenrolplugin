@@ -20,7 +20,7 @@ class approvalenrolrequests{
     public static function get_requests_data(array $params,string $fields = 'er.*', bool $single = false){
         global $DB;
         
-        $table = \enrol_approvalenrol\approval_enrol::$table;
+        $table = \enrol_approvalenrol\approval_enrol::TABLE;
         
         $filtercondition = '';
         if (isset($params['userid'])) {
@@ -65,7 +65,7 @@ class approvalenrolrequests{
         $newrequest->userid = $userid;
         $newrequest->timecreated = time();
 
-        $newrequestid = $DB->insert_record(approval_enrol::$table, $newrequest);
+        $newrequestid = $DB->insert_record(approval_enrol::TABLE, $newrequest);
 
         $coursecontext = \context_course::instance($courseid);
 
@@ -98,7 +98,7 @@ class approvalenrolrequests{
         
         $request->timemodified = time();
 
-        $DB->update_record(\enrol_approvalenrol\approval_enrol::$table, $request);
+        $DB->update_record(\enrol_approvalenrol\approval_enrol::TABLE, $request);
         
         $transaction->allow_commit();
 

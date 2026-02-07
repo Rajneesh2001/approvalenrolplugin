@@ -8,7 +8,7 @@ class helper{
     private string $table;
 
     public function __construct( private \moodle_database $db){
-        $this->table = \enrol_approvalenrol\approval_enrol::$table;
+        $this->table = \enrol_approvalenrol\approval_enrol::TABLE;
     }
 
     public static function get_helper_instance(\moodle_database $db){

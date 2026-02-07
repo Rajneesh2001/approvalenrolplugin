@@ -45,7 +45,7 @@ class updaterequests extends external_api{
         $transaction = $DB->start_delegated_transaction();
         try{
             $DB->execute(
-                'UPDATE {'. approval_enrol::$table .'} SET approval_status = :status WHERE userid = :userid and courseid= :courseid',
+                'UPDATE {'. approval_enrol::TABLE .'} SET approval_status = :status WHERE userid = :userid and courseid= :courseid',
                 ['status' => $requeststatus, 'userid' => $userid, 'courseid' => $courseid]
             );
             

@@ -45,7 +45,6 @@ class approvaldashboard {
         }
 
         try{
-            // $requests = $DB->get_records(self::$table, $params);
             $requests['data'] = approvalenrolrequests::get_requests_data($params);
             $requests['counts'] = $this->get_request_counts($this->courseid);
             return $requests?:[];
@@ -83,7 +82,7 @@ class approvaldashboard {
                 when approval_status = :rejected then 'rejected'
                 else 'pending' end AS status
                 ,count(approval_status) AS request_counts from {".
-                approval_enrol::$table ."} 
+                approval_enrol::TABLE ."} 
                 where courseid = :courseid group by approval_status";
         $requestsarray = $DB->get_records_sql($sql, [
                                     'courseid' => $this->courseid,

@@ -2,7 +2,6 @@
 $string['pluginname'] = 'Email Approval Verify';
 $string['approvalenrol:enrol'] = 'Approvar can enable user enrolment ';
 $string['approvalenrol:unenrol'] = 'Approvar can disbled user enrolment';
-$string['submit'] = 'Enrol Me';
 $string['firstname'] = 'First Name';
 $string['lastname'] = 'Last Name';
 $string['email'] = 'Email';
@@ -43,7 +42,7 @@ $string['approverrole:desc'] = 'Grants the user permission to review and approve
 $string['eventrequestcreated'] = 'Request Created';
 $string['select_approver'] = 'Select Approver';
 $string['invalidcourse'] = 'Course Id is not Valid';
-$string['submit'] = 'Submit';
+$string['req_enrol'] = 'Request enrolment';
 $string['select_user'] = 'Select User';
 $string['nositeadminfound'] = 'No Site Admin Found, Please contact Admin';
 $string['approvernotadd'] = 'Could Not add Approver, Please contact Admin';

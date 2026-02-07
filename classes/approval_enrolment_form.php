@@ -22,7 +22,7 @@ class approval_enrolment_form extends moodleform
         $mform->setDefault('instance', $instance->id);
 
 
-        $mform->addElement('submit', 'submitbutton', get_string('submit', 'enrol_approvalenrol'));
+        $mform->addElement('submit', 'submitbutton', get_string('req_enrol', 'enrol_approvalenrol'));
     }
 
 }

@@ -18,36 +18,43 @@ use \enrol_approvalenrol\approval_enrol;
  */
 function enrol_approvalenrol_extend_navigation_course($parentnode,$course){
     if (\enrol_approvalenrol\local\approvalenrolrequests::is_enrol_approvalenrol_enabled($course->id)) {
-        
-        // Add "Approval" node
-        $parentnode->add(
-         get_string('nodename','enrol_approvalenrol'),
-         new moodle_url('/enrol/approvalenrol/approval.php',['courseid' => $course->id, 'status' => '2']),
-         navigation_node::TYPE_CUSTOM,
-         NULL,
-         'approvalenrol',
-         NULL
-        );
-       
-        // Add "Approval Dashboard" node
-        $parentnode->add(
-            get_string('approve_req_dashboard', 'enrol_approvalenrol'),
-            new moodle_url('/enrol/approvalenrol/approval_dashboard.php',['courseid' => $course->id]),
+        $context = context_course::instance($course->id);
+        if(has_capability('enrol/approvalenrol:viewapprovaldashboard', $context)){
+
+            // Add "Approval" node
+            $parentnode->add(
+            get_string('nodename','enrol_approvalenrol'),
+            new moodle_url('/enrol/approvalenrol/approval.php',['courseid' => $course->id, 'status' => '2']),
             navigation_node::TYPE_CUSTOM,
             NULL,
-            'approvalenrol__dashboard',
+            'approvalenrol',
             NULL
-        );
+            );
+        
+            // Add "Approval Dashboard" node
+            $parentnode->add(
+                get_string('approve_req_dashboard', 'enrol_approvalenrol'),
+                new moodle_url('/enrol/approvalenrol/approval_dashboard.php',['courseid' => $course->id]),
+                navigation_node::TYPE_CUSTOM,
+                NULL,
+                'approvalenrol__dashboard',
+                NULL
+            );
 
-        // Add "Select Approver" node
-        $parentnode->add(
-            get_string('select_approver', 'enrol_approvalenrol'),
-            new moodle_url('/enrol/approvalenrol/select_approver.php', ['courseid' => $course->id]),
-            navigation_node::NODETYPE_LEAF,
-            NULL,
-            'approvalenrol__approverselect',
-            NULL
-        );
+
+        }
+
+        if(has_capability('enrol/approvalenrol:managecourseapprover', $context)) {
+             // Add "Select Approver" node
+                $parentnode->add(
+                    get_string('select_approver', 'enrol_approvalenrol'),
+                    new moodle_url('/enrol/approvalenrol/select_approver.php', ['courseid' => $course->id]),
+                    navigation_node::NODETYPE_LEAF,
+                    NULL,
+                    'approvalenrol__approverselect',
+                    NULL
+                );
+        }
 
     }
 }

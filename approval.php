@@ -12,6 +12,8 @@ $url = new moodle_url('/enrol/approvalenrol/approval.php', ['courseid' => $cours
 if (!$courseid) {
     throw new moodle_exception('Course Id cannot be 0');
 }
+$context = context_course::instance($courseid);
+require_capability('enrol/approvalenrol:viewapprovaldashboard', $context);
 if(!$status){
     throw new moodle_exception('Status cannot be empty');
 }
@@ -19,7 +21,7 @@ $course = get_course($courseid);
 require_login($course);
 $approvaldashboard = new \enrol_approvalenrol\approvaldashboard($course->fullname, $course->id, $status);
 $titleheading = $approvaldashboard->get_title();
-$PAGE->set_context(context_course::instance($courseid));
+$PAGE->set_context($context);
 
 $PAGE->set_title($titleheading);
 $PAGE->set_heading($titleheading);

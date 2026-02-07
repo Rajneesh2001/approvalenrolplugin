@@ -80,3 +80,5 @@ $string['autoapprovereject'] = 'Enable Auto Approve/Reject';
 $string['enableapproverreporting:desc'] = 'Allow course approvers to view and manage Approval dashboard and Requests';
 $string['update_failed'] = 'Request Update Failed';
 $string['enrolrevoke'] = 'Course access revoked. Contact your teacher to resolve this issue.';
+$string['approvalenrol:viewapprovaldashboard'] = 'View the enrolment approval dashboards and reports';
+$string['approvalenrol:managecourseapprover'] = 'Manage course approver for enrolment requests';

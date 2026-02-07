@@ -2,11 +2,14 @@
 require_once("../../config.php");
 require_once("$CFG->dirroot/enrol/approvalenrol/locallib.php");
 defined('MOODLE_INTERNAL') || die();
+
 global $PAGE, $OUTPUT, $CFG;
 $courseid = required_param('courseid', PARAM_INT);
 if (!$courseid) {
     throw new moodle_exception('Course Id cannot be 0');
 }
+$context = context_course::instance($courseid);
+require_capability('enrol/approvalenrol:viewapprovaldashboard', $context);
 $course = get_course($courseid);
 
 //Ensure login and permissions
@@ -20,7 +23,7 @@ $url = new moodle_url('/enrol/approvalenrol/approval_dashboard.php', ['courseid'
 $titleheading = get_string('course_approve_req_dashboard', 'enrol_approvalenrol',['fullname' => $course->fullname]);
 $PAGE->set_url($url);
 $PAGE->set_pagelayout('standard');
-$PAGE->set_context(context_course::instance($courseid));
+$PAGE->set_context($context);
 $PAGE->set_title($titleheading);
 $PAGE->set_heading($titleheading);
 $PAGE->requires->css(new moodle_url('/enrol/approvalenrol/styles.css'));

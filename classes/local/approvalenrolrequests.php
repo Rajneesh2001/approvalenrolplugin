@@ -262,7 +262,7 @@ class approvalenrolrequests{
     public static function get_course_approvers(int $courseid, int $instanceid):array|bool {
       global $DB;
 
-      $userids = $DB->get_field('enrol','customchar1', ['id'=>$instanceid, 'courseid' => $courseid, 'enrol' => 'approvalenrol']);
+      $userids = $DB->get_field('enrol','customtext1', ['id'=>$instanceid, 'courseid' => $courseid, 'enrol' => 'approvalenrol']);
 
       if(empty($userids)) {
          return false;

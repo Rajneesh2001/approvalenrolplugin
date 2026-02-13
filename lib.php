@@ -72,8 +72,8 @@ class enrol_approvalenrol_plugin extends enrol_plugin{
 
     public function update_instance($instance, $data) {
         
-        if(isset($data->customchar1) && is_array($data->customchar1)) {
-            $data->customchar1 = implode(",", $data->customchar1);            
+        if(isset($data->customtext1) && is_array($data->customtext1)) {
+            $data->customtext1 = implode(",", $data->customtext1);            
         }
         
         return parent::update_instance($instance, $data);
@@ -131,8 +131,8 @@ class enrol_approvalenrol_plugin extends enrol_plugin{
             'noselectionstring' => get_string('noapproverselect', 'enrol_approvalenrol'),                                                                
         ); 
 
-        $mform->addElement('autocomplete', 'customchar1', get_string('selectapprover', 'enrol_approvalenrol'), $enrolledusers, $options);
-        $mform->addHelpButton('customchar1', 'selectapprover', 'enrol_approvalenrol');
+        $mform->addElement('autocomplete', 'customtext1', get_string('selectapprover', 'enrol_approvalenrol'), $enrolledusers, $options);
+        $mform->addHelpButton('customtext1', 'selectapprover', 'enrol_approvalenrol');
 
         $mform->addElement('advcheckbox', 'customint3', get_string('autoapprovereject', 'enrol_approvalenrol'));
         $mform->addHelpButton('customint3', 'autoapprovereject', 'enrol_approvalenrol');

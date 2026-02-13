@@ -40,22 +40,7 @@ function enrol_approvalenrol_extend_navigation_course($parentnode,$course){
                 'approvalenrol__dashboard',
                 NULL
             );
-
-
         }
-
-        if(has_capability('enrol/approvalenrol:managecourseapprover', $context)) {
-             // Add "Select Approver" node
-                $parentnode->add(
-                    get_string('select_approver', 'enrol_approvalenrol'),
-                    new moodle_url('/enrol/approvalenrol/select_approver.php', ['courseid' => $course->id]),
-                    navigation_node::NODETYPE_LEAF,
-                    NULL,
-                    'approvalenrol__approverselect',
-                    NULL
-                );
-        }
-
     }
 }
 
@@ -83,6 +68,15 @@ class enrol_approvalenrol_plugin extends enrol_plugin{
      */
     public function can_add_instance($courseid){
         return true;
+    }
+
+    public function update_instance($instance, $data) {
+        
+        if(isset($data->customchar1) && is_array($data->customchar1)) {
+            $data->customchar1 = implode(",", $data->customchar1);            
+        }
+        
+        return parent::update_instance($instance, $data);
     }
     
     /**
@@ -130,6 +124,16 @@ class enrol_approvalenrol_plugin extends enrol_plugin{
      * @return void
      */
     public function edit_instance_form($instance, MoodleQuickForm $mform,  $context ) {
+        $enrolledusers = $this->get_enrolled_users($instance->courseid);
+
+        $options = array(                                                                                                           
+            'multiple' => true,                                                  
+            'noselectionstring' => get_string('noapproverselect', 'enrol_approvalenrol'),                                                                
+        ); 
+
+        $mform->addElement('autocomplete', 'customchar1', get_string('selectapprover', 'enrol_approvalenrol'), $enrolledusers, $options);
+        $mform->addHelpButton('customchar1', 'selectapprover', 'enrol_approvalenrol');
+
         $mform->addElement('advcheckbox', 'customint3', get_string('autoapprovereject', 'enrol_approvalenrol'));
         $mform->addHelpButton('customint3', 'autoapprovereject', 'enrol_approvalenrol');
 
@@ -159,7 +163,7 @@ class enrol_approvalenrol_plugin extends enrol_plugin{
         $this->load_config_settings($instance);
         $form = new approval_enrolment_form(null, ['instance' => $instance]);
         $approvalenrol = new approval_enrol((int)$instance->courseid, $USER->id);
-
+       
         $status = $approvalenrol->get_request_status();
     
         if($form->is_submitted()){
@@ -170,9 +174,10 @@ class enrol_approvalenrol_plugin extends enrol_plugin{
             }
             
             if ($status === $approvalenrol::ENROL_STATUS_UNENROLED) {
-                $approvalenrol->update_request(['is_unenrolled' => 0, 'approval_status' => $approvalstatus], true);
+                $approvalenrol->update_request(['is_unenrolled' => 0, 'approval_status' => $approvalstatus], true, $instance->id);
             } else if ($status === $approvalenrol::NO_APPROVAL_REQUEST) {
-                $approvalenrol->create_request($approvalstatus, $approvalstatus === $approvalenrol::PENDING_REQUEST ? true : false );
+                $is_pending = ($approvalstatus === $approvalenrol::PENDING_REQUEST);
+                $approvalenrol->create_request($approvalstatus, $is_pending, $instance->id);
             }
 
             redirect(new moodle_url('/enrol/index.php',['id'=>$instance->courseid]));
@@ -298,7 +303,7 @@ class enrol_approvalenrol_plugin extends enrol_plugin{
         if ($request) {
             $approval_enrolinstance->update_request([
                 'is_unenrolled' => true
-            ], false
+            ], false, $instance->id
             );
         } else {
             debugging('Approval request missing on unenrol:userid: '. $userid. 'for courseid: '. $instance->courseid,DEBUG_DEVELOPER);
@@ -306,5 +311,26 @@ class enrol_approvalenrol_plugin extends enrol_plugin{
         
 
         return parent::unenrol_user($instance, $userid);
+    }
+
+    /**
+     * provide a array of participants with active enrolment
+     * @param int $courseid
+     * 
+     * @return array of participants
+     */
+    private function get_enrolled_users(int $courseid) {
+
+             $context = context_course::instance($courseid);
+             $fields = 'u.id,u.email,u.firstname,u.lastname';
+
+             $enrolledusers = get_enrolled_users(context: $context, userfields:$fields, onlyactive: true);
+             $enrolledusersarray = [get_string('selectapprover', 'enrol_approvalenrol')];
+             foreach ($enrolledusers as $participant) {
+                 $enrolledusersarray[$participant->id] = $participant->firstname ." ". $participant->lastname ." ". $participant->email;
+             }
+
+             return $enrolledusersarray;
+
     }
 }

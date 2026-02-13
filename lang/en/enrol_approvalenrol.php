@@ -40,7 +40,7 @@ $string['approverrole'] = 'Approver';
 $string['approverrole:desc'] = 'Grants the user permission to review and approve enrollment requests submitted by other users for a specific course.
 ';
 $string['eventrequestcreated'] = 'Request Created';
-$string['select_approver'] = 'Select Approver';
+$string['selectapprover'] = 'Select Approver';
 $string['invalidcourse'] = 'Course Id is not Valid';
 $string['req_enrol'] = 'Request enrolment';
 $string['select_user'] = 'Select User';
@@ -82,3 +82,5 @@ $string['update_failed'] = 'Request Update Failed';
 $string['enrolrevoke'] = 'Course access revoked. Contact your teacher to resolve this issue.';
 $string['approvalenrol:viewapprovaldashboard'] = 'View the enrolment approval dashboards and reports';
 $string['approvalenrol:managecourseapprover'] = 'Manage course approver for enrolment requests';
+$string['selectapprover_help'] = 'Select the participants who will approve or reject enrolment requests for this course';
+$string['noapproverselect'] = 'No Approver Selected';

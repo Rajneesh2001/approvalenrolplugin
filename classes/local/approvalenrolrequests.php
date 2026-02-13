@@ -252,6 +252,27 @@ class approvalenrolrequests{
     }
 
     /**
+     * Fetch list of participants who were selected as approver in specified course
+     * 
+     * @param int $courseid
+     * @param int $instanceid
+     * 
+     * @return array of users otherwise returns false when no participants found.
+     */
+    public static function get_course_approvers(int $courseid, int $instanceid):array|bool {
+      global $DB;
+
+      $userids = $DB->get_field('enrol','customchar1', ['id'=>$instanceid, 'courseid' => $courseid, 'enrol' => 'approvalenrol']);
+
+      if(empty($userids)) {
+         return false;
+      }
+
+      return array_map('intval', explode(',',$userids));
+
+    }
+
+    /**
      * Fetch email approval verify configs
      * @param int $courseid
      * @return \stdClass $config

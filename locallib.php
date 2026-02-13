@@ -57,10 +57,10 @@ class approval_enrol {
      * Create user enrolment record in the Approval Requests table and send the email to notify the Approver
      * @param \stdClass $request
      * @param bool $shouldnotify if true an email notification is trigger to approver, else skip the notification part.
+     * @param int $instanceid
      * @return int
      */
-    public function create_request($request, $shouldnotify):int{
-         global $PAGE;
+    public function create_request($request, $shouldnotify, $instanceid):int{
 
          if(is_null($request)) {
             $request = self::PENDING_REQUEST;
@@ -70,7 +70,7 @@ class approval_enrol {
          
          if($id){
             if($shouldnotify) {
-                $this->notify_approveruser();
+                $this->notify_approveruser($instanceid);
             }
          }else {
             throw new \moodle_exception('Record not Inserted', 'enrol_approvalenrol');
@@ -83,7 +83,7 @@ class approval_enrol {
      * @param $dataarray
      * @return true
      */
-    public function update_request(array $dataarray, bool $shouldnotify):bool {
+    public function update_request(array $dataarray, bool $shouldnotify, int $instanceid):bool {
 
         if(is_null($this->requestdata)) {
             debugging('Cannot update request data', DEBUG_DEVELOPER);
@@ -98,7 +98,7 @@ class approval_enrol {
         try {
         \enrol_approvalenrol\local\approvalenrolrequests::update_enrol_approval_requestsdata($updaterequest);
         if($shouldnotify) {
-            $this->notify_approveruser();
+            $this->notify_approveruser($instanceid);
         }
         return true;
         } catch(\moodle_exception $e) {
@@ -112,13 +112,13 @@ class approval_enrol {
     /**
      * send automated mail to the approver
      * @param \stdClass $sender
-     * @param \stdClass $approver
+     * @param array $courseapproverids
      * @param string $url
      * @param string $subject
      * 
      * @return bool
      */
-    public function send_mail_to_approver(\stdClass $sender,\stdClass $approver, string $url, string $subject):bool{
+    public function send_mail_to_approver(\stdClass $sender,array $courseapproverids, string $url, string $subject):bool{
         global $CFG;
         require_once($CFG->libdir . '/moodlelib.php');
         
@@ -130,12 +130,21 @@ class approval_enrol {
         $message = $this->generate_message_body(self::EMAIL_REQUESTED, [
             'email' => $fromemail, 
             'url' => $url]);
-            
-        if(!\enrol_approvalenrol\local\helper::send_message($sender, $approver, $subject, $message)){
-            return false;
-        } 
-            
-        return true;    
+        
+        $failedids = [];
+
+        foreach ($courseapproverids as $courseapproverid) {
+            $courseapprover = \core_user::get_user($courseapproverid);
+            if(!\enrol_approvalenrol\local\helper::send_message($sender, $courseapprover, $subject, $message)){
+                 $failedids[] = $courseapproverid;
+            } 
+        }
+        
+        if(!empty($failedids)) {
+            debugging('Could not send message to approver IDs ' . implode(',', $failedids), DEBUG_DEVELOPER);
+        }
+        
+        return empty($failedids);
     }
 
     /**
@@ -143,20 +152,19 @@ class approval_enrol {
      * 
      * @return void
      */
-    private function notify_approveruser() {
-        $configdata = \enrol_approvalenrol\local\approvalenrolrequests::fetch_enrolapprovalenrol_configdata($this->courseid);
+    private function notify_approveruser($instanceid) {
+        $courseapprovers = \enrol_approvalenrol\local\approvalenrolrequests::get_course_approvers($this->courseid, $instanceid);
         
         $fromuser = \core_user::get_user($this->userid);
         $url = (new \moodle_url('/enrol/approvalenrol/approval.php',['courseid' => $this->courseid, 'status' => 2]))->out(false);
         $subject = get_string('course_enrol_req_sub', 'enrol_approvalenrol');
-        
-        if (is_bool($configdata)) {
+
+        if (!$courseapprovers && !is_array($courseapprovers)) {
             $debugcontext = 'admins';
             $sentmail = $this->send_mail_to_siteadmins($fromuser, $url, $subject);
         } else {
             $debugcontext = 'approver';
-            $approver = \core_user::get_user(is_object($configdata)?$configdata->approvers:$configdata);
-            $sentmail = $this->send_mail_to_approver($fromuser,$approver, $url, $subject);
+            $sentmail = $this->send_mail_to_approver($fromuser, $courseapprovers, $url, $subject);
         }
 
         if (!$sentmail) {

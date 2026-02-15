@@ -78,17 +78,6 @@ class observer {
          }
      }
 
-     public static function user_unenrolled(\core\event\user_enrolment_deleted $event):void {
-         $eventdata = $event->get_data();
-         $userid = $eventdata['other']['userenrolment']['userid'] ?? NULL;
-         if(empty($eventdata['courseid']) || empty($userid)) {
-            return;
-         }
-         \enrol_approvalenrol\local\approvalenrolrequests::remove_courseapprover($eventdata['courseid'], $userid);
-
-         return;
-     }
-
      /**
       * Toggle is_revoke setting according to user enrolment status
       * @param \core\event\user_enrolment_updated $event

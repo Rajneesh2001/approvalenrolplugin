@@ -13,7 +13,9 @@ if (!$courseid) {
     throw new moodle_exception('Course Id cannot be 0');
 }
 $context = context_course::instance($courseid);
-require_capability('enrol/approvalenrol:viewapprovaldashboard', $context);
+if(!\enrol_approvalenrol\local\approvalenrolrequests::can_manage_approval_requests($courseid, $USER->id)) {
+    throw new required_capability_exception($context, 'enrol/approvalenrol:viewapprovaldashboard', 'nopermissions','');
+}
 if(!$status){
     throw new moodle_exception('Status cannot be empty');
 }

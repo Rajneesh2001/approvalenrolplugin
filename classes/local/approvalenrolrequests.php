@@ -191,4 +191,43 @@ class approvalenrolrequests{
       return array_map('intval', explode(',',$userids));
 
     }
+
+    /**
+     * check if the participant is approver or not
+     * @param int $courseid
+     * @param int $userid
+     * 
+     * @return bool
+     */
+    public static function is_course_approver($courseid, $userid) {
+        $enrolinstances = enrol_get_instances($courseid, true);
+        foreach($enrolinstances as $enrolinstance) {
+            if($enrolinstance->enrol === 'approvalenrol') {
+                if (empty($enrolinstance->customtext1)) {
+                     continue;
+                }
+
+                $approverids = array_map('trim', explode(",", $enrolinstance->customtext1));
+
+                if(in_array($userid, $approverids)) {
+                    return true;
+                } 
+            }
+        }
+        return false;
+    }
+
+    /**
+     * checks if the particant can access the approval request
+     * @param int $courseid 
+     * @param int $userid
+     * 
+     * @return bool
+     */
+    public static function can_manage_approval_requests(int $courseid, int $userid) {
+
+            $context = \context_course::instance($courseid);
+
+            return has_capability('enrol/approvalenrol:viewapprovaldashboard', $context) || self::is_course_approver($context->instanceid, $userid);
+    }
 }

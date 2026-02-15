@@ -17,9 +17,10 @@ use \enrol_approvalenrol\approval_enrol;
  * 
  */
 function enrol_approvalenrol_extend_navigation_course($parentnode,$course){
+    global $USER;
     if (\enrol_approvalenrol\local\approvalenrolrequests::is_enrol_approvalenrol_enabled($course->id)) {
-        $context = context_course::instance($course->id);
-        if(has_capability('enrol/approvalenrol:viewapprovaldashboard', $context)){
+        $userid = $USER->id; 
+        if(\enrol_approvalenrol\local\approvalenrolrequests::can_manage_approval_requests($course->id, $userid)){
 
             // Add "Approval" node
             $parentnode->add(

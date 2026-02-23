@@ -79,6 +79,14 @@ class enrol_approvalenrol_plugin extends enrol_plugin{
         
         return parent::update_instance($instance, $data);
     }
+
+    public function add_instance($course, ?array $fields = null) {
+        if(isset($fields['customtext1']) && is_array($fields['customtext1'])) {
+            $fields['customtext1'] = implode(",", $fields['customtext1']);
+        }
+        
+        return parent::add_instance($course, $fields);
+    }
     
     /**
      * Perform custom validation of the data used to edit the instance.
@@ -139,6 +147,7 @@ class enrol_approvalenrol_plugin extends enrol_plugin{
         $mform->addHelpButton('customint3', 'autoapprovereject', 'enrol_approvalenrol');
 
         $mform->addElement('select', 'customint1', get_string('autoapprove', 'enrol_approvalenrol'), $this->get_status());
+        $mform->setDefault('customint1', self::ENROL_INSTANCE_ENABLED);
         $mform->addHelpButton('customint1', 'autoapprove', 'enrol_approvalenrol');
         $mform->hideIf('customint1', 'customint3', 'notchecked');
 

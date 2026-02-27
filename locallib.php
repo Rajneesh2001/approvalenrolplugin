@@ -11,6 +11,7 @@ class approval_enrol {
     public const REQUEST_ALL = 4;
     public const ENROL_STATUS_REVOKED = 5;
     public const ENROL_STATUS_UNENROLED = 6;
+    public const REQUEST_EXPIRED = 7;
     public const PAGE_LIMIT = 10;
     public const TABLE = 'enrol_approvalenrol_requests';
 

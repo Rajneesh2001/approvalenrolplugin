@@ -84,3 +84,4 @@ $string['approvalenrol:viewapprovaldashboard'] = 'View the enrolment approval da
 $string['approvalenrol:managecourseapprover'] = 'Manage course approver for enrolment requests';
 $string['selectapprover_help'] = 'Select the participants who will approve or reject enrolment requests for this course';
 $string['noapproverselect'] = 'No Approver Selected';
+$string['taskexpirepending'] = 'Expire stale pending enrolment requests';

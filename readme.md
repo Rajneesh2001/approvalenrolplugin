@@ -8,7 +8,7 @@ which is approved by the approver.
 - Site admin can assign a specific approver per course
 - Approver can approve or reject enrolment requests
 - Notifications are sent to the assigned approver, or to the site admin if none is assigned
-- Approver dashboard with visual analytics powered by Chart.js
+- **Approver Dashboard** with visual analytics powered by **Highcharts**
 
 ## Requirements
 - Moodle 4.4 (tested on 4.4)

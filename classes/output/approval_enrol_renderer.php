@@ -51,4 +51,38 @@ class approval_enrol_renderer {
         );
     }
 
+    public static function generate_approval_response($data) {
+        if(!isset($data['approvalstatus']) || !is_bool($data['approvalstatus'])) {
+            throw new \moodle_exception('no approvalstatus received');
+        }
+
+        $firstname = isset($data['firstname'])?$data['firstname']:'FirstName';
+        $coursefullname = isset($data['coursefullname'])?$data['coursefullname']:'CourseFullName';
+        $courseurl = isset($data['courseurl'])?$data['courseurl']:'Courseurl';
+        $signaturename = isset($data['signaturename'])?$data['signaturename']: $data['signaturename'];
+
+        if($data['approvalstatus'] == '1') {
+            
+            $messagebody = "<p>We are pleased to inform you that your request to enrol in the Course <b>$coursefullname</b>  has been approved.<br>
+            You can now access the course and begin your learning journey.<br>
+            <a href=\"{$courseurl}\">Click on this link to view the course</a>
+            </p><br>";
+        } else {
+            $messagebody = "<p>After Carefull consideration we regret to tell you your request for course <b>$coursefullname</b> enrolment request has been rejected. </p><br>";
+        }
+
+         $message = <<<HTML
+            <p>Hi <b>$firstname</b></p>
+            $messagebody
+            <p>
+            <b>Best regards,<br>
+            $signaturename</b>
+            </p>
+            HTML;
+
+      return $message;
+    }
+
+
+
 }

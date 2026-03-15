@@ -14,6 +14,7 @@ $string['event_approval_requests_updated'] = 'Approval Requests Update';
 $string['messageprovider:approval_notifications'] = 'Notify Users About Their Approval Request';
 $string['requestapproved'] = 'Request Approved';
 $string['requestdenied'] = 'Request Denied';
+$string['requestexpired'] = 'Request Expired';
 $string['rejectmsg'] = 'Your enrolment request has been rejected by the approver.
 Please contact the approver for further clarification or to resolve the issue.
 ';
@@ -85,3 +86,7 @@ $string['approvalenrol:managecourseapprover'] = 'Manage course approver for enro
 $string['selectapprover_help'] = 'Select the participants who will approve or reject enrolment requests for this course';
 $string['noapproverselect'] = 'No Approver Selected';
 $string['taskexpirepending'] = 'Expire stale pending enrolment requests';
+$string['expirependingdays']  = 'Pending Expiry';
+$string['expirependingdays_desc'] = 'Defines how many days a request can stay pending before the expiry action is triggered.';
+$string['expirependingactions'] = 'Action when approval request expires';
+$string['expirependingactions_desc'] = 'Select the action that should be performed when a pending approval request reaches its expiry time.';

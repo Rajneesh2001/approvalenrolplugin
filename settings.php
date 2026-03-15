@@ -1,9 +1,12 @@
 <?php
 
 defined('MOODLE_INTERNAL') || die();
+use enrol_approvalenrol\approval_enrol;
 
 if($ADMIN->fulltree){ 
-      global $DB;
+      global $DB,$CFG;
+
+      require_once($CFG->dirroot . '/enrol/approvalenrol/locallib.php');
       
       $settings->add(new admin_setting_configtext(
          'enrol_approvalenrol/fromname',
@@ -13,30 +16,32 @@ if($ADMIN->fulltree){
          PARAM_TEXT
       ));
 
-      $settings->add(new admin_setting_configtext(
-         'enrol_approval/fromemail',
-         get_string('fromemail', 'enrol_approvalenrol'),
-         get_string('fromemail_desc', 'enrol_approvalenrol'),
-         get_string('defaultfromemail', 'enrol_approvalenrol', \core_user::get_noreply_user()),
-      ));
-
-      $usersarray = \enrol_approvalenrol\local\approvalenrolrequests::fetch_approvers_candidates();
-      $options[0] = '';
-      foreach ($usersarray as $user) {
-         $options[$user->id] = $user->email;
+      $opitons = [];
+      for($i=3;$i<15;$i++) {
+         $options[$i] = $i;
       }
-      $settings->add(new admin_setting_configselect_autocomplete(
-         'enrol_approvalenrol/approvers',
-         get_string('approver', 'enrol_approvalenrol'),
-         get_string('approver_desc', 'enrol_approvalenrol'),
-         '',
+      $settings->add(new admin_setting_configselect(
+         'enrol_approvalenrol/expirependingdays',
+         get_string('expirependingdays', 'enrol_approvalenrol'),
+         get_string('expirependingdays_desc', 'enrol_approvalenrol'),
+         7,
          $options
       ));
-      $settings->add(new admin_setting_configcheckbox(
-         'enrol_approvalenrol/enableapproverreporting',
-         get_string('enableapproverreporting', 'enrol_approvalenrol'),
-         get_string('enableapproverreporting:desc', 'enrol_approvalenrol'),
-         false
+      
+      $options = [
+         approval_enrol::REQUEST_ACCEPTED => get_string('requestapproved', 'enrol_approvalenrol'),
+         approval_enrol::REQUEST_REJECTED => get_string('requestdenied', 'enrol_approvalenrol'),
+         approval_enrol::REQUEST_EXPIRED => get_string('requestexpired', 'enrol_approvalenrol')
+      ];
+
+      $settings->add(new admin_setting_configselect(
+         'enrol_approvalenrol/expirependingactions',
+         get_string('expirependingactions', 'enrol_approvalenrol'),
+         get_string('expirependingactions_desc', 'enrol_approvalenrol'),
+         approval_enrol::REQUEST_EXPIRED,
+         $options
       ));
+
+
    }
 

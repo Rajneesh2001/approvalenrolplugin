@@ -231,16 +231,13 @@ class approvalenrolrequests{
             return has_capability('enrol/approvalenrol:viewapprovaldashboard', $context) || self::is_course_approver($context->instanceid, $userid);
     }
 
-    public static function bulk_update_pending_requests($approvalstatus) {
+    public static function bulk_update_expirypending_requests($approvalstatus, $expiretime) {
         global $DB;
 
-        try{
         $transaction = $DB->start_delegated_transaction();
-
-        $expirytime = time() - (7 * DAYSECS );
-
+        try{
+        $expirytime = time() - ($expiretime * DAYSECS );
         $tablename = \enrol_approvalenrol\approval_enrol::TABLE;
-
         $sql = "UPDATE {{$tablename}} SET approval_status = :approvalstatus
                 where approval_status = :pendingstatus and coalesce(timemodified,timecreated)<:expirytime";
         
@@ -255,6 +252,7 @@ class approvalenrolrequests{
         return true;
         } catch(\Exception $e) {
             $transaction->rollback($e);
+            debugging($e->getMessage());
         }
 
 
